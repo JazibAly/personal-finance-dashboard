@@ -24,6 +24,46 @@ ChartJS.register(
   Title
 );
 
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: {
+        boxWidth: 10,
+        font: { size: 11, family: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+        color: "#64748b",
+      },
+    },
+  },
+  scales: {
+    x: {
+      ticks: { color: "#64748b", font: { size: 11 } },
+      grid: { color: "rgba(148, 163, 184, 0.2)" },
+    },
+    y: {
+      ticks: { color: "#64748b", font: { size: 11 } },
+      grid: { color: "rgba(148, 163, 184, 0.2)" },
+    },
+  },
+};
+
+const pieOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: {
+        boxWidth: 10,
+        font: { size: 11, family: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+        color: "#64748b",
+      },
+    },
+  },
+};
+
 function groupByCategory(expenses, categoriesById) {
   const totals = {};
   expenses.forEach((expense) => {
@@ -51,6 +91,8 @@ function groupByDay(expenses) {
   return totals;
 }
 
+const palette = ["#2563eb", "#059669", "#7c3aed", "#ea580c", "#e11d48", "#0ea5e9", "#ca8a04"];
+
 export function ExpenseCharts({ expenses, categories }) {
   const categoriesById = Object.fromEntries(categories.map((c) => [c.id, c.name]));
 
@@ -58,12 +100,15 @@ export function ExpenseCharts({ expenses, categories }) {
   const byMonth = groupByMonth(expenses);
   const byDay = groupByDay(expenses);
 
+  const categoryLabels = Object.keys(byCategory);
   const pieData = {
-    labels: Object.keys(byCategory),
+    labels: categoryLabels,
     datasets: [
       {
-        label: "Expense by Category",
+        label: "Expense by category",
         data: Object.values(byCategory),
+        backgroundColor: categoryLabels.map((_, i) => palette[i % palette.length]),
+        borderWidth: 0,
       },
     ],
   };
@@ -72,9 +117,10 @@ export function ExpenseCharts({ expenses, categories }) {
     labels: Object.keys(byMonth),
     datasets: [
       {
-        label: "Monthly Expenses",
+        label: "Monthly expenses",
         data: Object.values(byMonth),
-        backgroundColor: "#60a5fa",
+        backgroundColor: "#93c5fd",
+        borderRadius: 8,
       },
     ],
   };
@@ -83,27 +129,40 @@ export function ExpenseCharts({ expenses, categories }) {
     labels: Object.keys(byDay),
     datasets: [
       {
-        label: "Daily Spending Trend",
+        label: "Daily spending trend",
         data: Object.values(byDay),
-        borderColor: "#6366f1",
-        backgroundColor: "#a5b4fc",
+        borderColor: "#2563eb",
+        backgroundColor: "rgba(37, 99, 235, 0.12)",
+        fill: true,
+        tension: 0.35,
+        pointRadius: 0,
+        borderWidth: 2,
       },
     ],
   };
 
   return (
-    <section className="charts-grid">
-      <article className="panel">
-        <h2>Expense Distribution</h2>
-        <Pie data={pieData} />
+    <section className="grid gap-4 xl:grid-cols-1" aria-label="Charts and analytics">
+      <article className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
+        <h2 className="text-base font-semibold text-ink">Expense distribution</h2>
+        <p className="mt-1 text-xs text-ink-muted">Share of spending by category.</p>
+        <div className="mt-4 h-64">
+          <Pie data={pieData} options={pieOptions} />
+        </div>
       </article>
-      <article className="panel">
-        <h2>Monthly Expenses</h2>
-        <Bar data={barData} />
+      <article className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
+        <h2 className="text-base font-semibold text-ink">Monthly expenses</h2>
+        <p className="mt-1 text-xs text-ink-muted">Totals grouped by calendar month.</p>
+        <div className="mt-4 h-64">
+          <Bar data={barData} options={chartOptions} />
+        </div>
       </article>
-      <article className="panel">
-        <h2>Daily Spending Trend</h2>
-        <Line data={lineData} />
+      <article className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
+        <h2 className="text-base font-semibold text-ink">Daily spending trend</h2>
+        <p className="mt-1 text-xs text-ink-muted">Expense amounts by day in the filtered range.</p>
+        <div className="mt-4 h-64">
+          <Line data={lineData} options={chartOptions} />
+        </div>
       </article>
     </section>
   );

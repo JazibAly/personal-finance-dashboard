@@ -1,0 +1,41 @@
+/** Asset URLs from Figma MCP — valid ~7 days; refresh via MCP if expired. */
+export const figmaAssets = {
+  userProfileAvatar:
+    "https://www.figma.com/api/mcp/asset/9ba530f4-f14a-413b-a041-7a7d3cd7bf41",
+  userProfileAvatarIncome:
+    "https://www.figma.com/api/mcp/asset/e0c6fec5-7759-48a6-9101-f0c581ac6f62",
+  userProfileAvatarExpenses:
+    "https://www.figma.com/api/mcp/asset/8bf11fd0-3edf-48bf-a271-2b3cc90006e4",
+  calendarIcon:
+    "https://www.figma.com/api/mcp/asset/4483d7f1-a009-4d81-9fdf-b0189f11daa3",
+  chevronDown:
+    "https://www.figma.com/api/mcp/asset/fc94b795-ae78-4f15-94cc-6e5ed6ce5311",
+  searchIcon:
+    "https://www.figma.com/api/mcp/asset/6beb68a0-04e5-47f6-9264-dfdcf75c09d3",
+  searchIconExpenses:
+    "https://www.figma.com/api/mcp/asset/ec4f6c34-c532-4a6a-972a-aa8e0f8ca9db",
+  bell:
+    "https://www.figma.com/api/mcp/asset/ac0bbad7-b452-4128-918a-5083efeac199",
+  settings:
+    "https://www.figma.com/api/mcp/asset/00ccfe43-ed71-492e-a253-50a5896b9e08",
+  navDashboard:
+    "https://www.figma.com/api/mcp/asset/5cd6f072-4a7c-4313-9ea5-4c8f5ca6880b",
+  navWallet:
+    "https://www.figma.com/api/mcp/asset/500b1e6e-32d6-4397-bc78-0558ceb75b2c",
+  navCard:
+    "https://www.figma.com/api/mcp/asset/4ed94162-d1ef-4c73-9c1f-1953f0086ed1",
+  navChart:
+    "https://www.figma.com/api/mcp/asset/33c43644-96c8-406a-9085-a8b44d55a80f",
+  navSettings:
+    "https://www.figma.com/api/mcp/asset/777a00e6-0d92-4097-a06e-8793af5aefc9",
+  navHelp:
+    "https://www.figma.com/api/mcp/asset/a4ad1950-15fd-4a0e-ba4c-410458b51bde",
+  trendUp:
+    "https://www.figma.com/api/mcp/asset/e064d544-6cea-4857-8237-6b4b50c38e62",
+  trendDown:
+    "https://www.figma.com/api/mcp/asset/14fc03ad-3068-4b2e-af9a-d5caea1b7e8f",
+  bank:
+    "https://www.figma.com/api/mcp/asset/465d4ea9-d8f7-486a-b6b0-acfc4af4ab9d",
+  spark:
+    "https://www.figma.com/api/mcp/asset/8f769971-f254-47a8-b759-0d506e56d691",
+};
