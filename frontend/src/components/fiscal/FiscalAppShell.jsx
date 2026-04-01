@@ -6,7 +6,7 @@ const topNav = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/income/add", label: "Income", end: false },
   { to: "/expenses/add", label: "Expenses", end: false },
-  { to: "/budgets", label: "Budgets", end: false },
+  { to: "/budgets/add", label: "Budgets", end: false },
 ];
 
 const sidebarNav = [
@@ -17,8 +17,8 @@ const sidebarNav = [
 ];
 
 const sidebarFooter = [
-  { id: "settings", icon: figmaAssets.navSettings, label: "Settings" },
-  { id: "help", icon: figmaAssets.navHelp, label: "Help" },
+  { id: "settings", to: "/settings", icon: figmaAssets.navSettings, label: "Settings" },
+  { id: "help", to: "#", icon: figmaAssets.navHelp, label: "Help" },
 ];
 
 function navActive(pathname, to, end) {
@@ -27,8 +27,8 @@ function navActive(pathname, to, end) {
 }
 
 function avatarSrc(variant) {
-  if (variant === "income") return figmaAssets.userProfileAvatarIncome;
-  if (variant === "expenses") return figmaAssets.userProfileAvatarExpenses;
+  // if (variant === "income") return figmaAssets.userProfileAvatarIncome;
+  // if (variant === "expenses") return figmaAssets.userProfileAvatarIncome;
   return figmaAssets.userProfileAvatar;
 }
 
@@ -61,11 +61,11 @@ export function FiscalAppShell({
         className="fixed left-0 top-0 z-20 flex h-full w-20 flex-col items-center justify-between border-r border-[rgba(191,201,195,0.15)] bg-[#f2f4f6] py-8"
         aria-label="Primary navigation"
       >
-        <Link to="/" className="flex flex-col items-center px-2">
+        {/* <Link to="/" className="flex flex-col items-center px-2">
           <span className="text-[24px] font-semibold leading-8 tracking-[-1.2px] text-[#022c22]">
-            FA
+            SW
           </span>
-        </Link>
+        </Link> */}
         <nav className="flex flex-1 flex-col items-center gap-8 pt-6" aria-label="App sections">
           {sidebarNav.map((item) => {
             const active = navActive(pathname, item.to, item.end);
@@ -74,11 +74,10 @@ export function FiscalAppShell({
                 key={`${item.to}-${item.label}`}
                 to={item.to}
                 title={item.label}
-                className={`flex w-full items-center justify-center rounded-lg p-3 transition ${
-                  active
-                    ? "bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
-                    : "opacity-50 hover:opacity-80"
-                }`}
+                className={`flex w-full items-center justify-center rounded-lg p-3 transition ${active
+                  ? "bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+                  : "opacity-50 hover:opacity-80"
+                  }`}
               >
                 <img src={item.icon} alt="" className="h-[18px] w-[18px] object-contain" />
               </Link>
@@ -87,14 +86,14 @@ export function FiscalAppShell({
         </nav>
         <div className="flex flex-col items-center gap-4">
           {sidebarFooter.map((item) => (
-            <button
+            <Link
               key={item.id}
-              type="button"
+              to={item.to}
               title={item.label}
               className="rounded-lg p-3 opacity-60 transition hover:opacity-100"
             >
               <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
-            </button>
+            </Link>
           ))}
         </div>
       </aside>
@@ -109,7 +108,7 @@ export function FiscalAppShell({
                 to="/"
                 className="shrink-0 text-[20px] font-bold leading-7 tracking-[-1px] text-[#022c22]"
               >
-                Fiscal Atelier
+                SpendWise
               </Link>
               <nav className="hidden items-center gap-6 md:flex" aria-label="Top navigation">
                 {topNav.map((item) => {
@@ -118,11 +117,10 @@ export function FiscalAppShell({
                     <Link
                       key={item.to}
                       to={item.to}
-                      className={`relative pb-1.5 text-base font-semibold tracking-[-0.4px] ${
-                        active
-                          ? "border-b-2 border-[#064e3b] text-[#064e3b]"
-                          : "text-[#64748b] hover:text-[#022c22]"
-                      }`}
+                      className={`relative pb-1.5 text-base font-semibold tracking-[-0.4px] ${active
+                        ? "border-b-2 border-[#064e3b] text-[#064e3b]"
+                        : "text-[#64748b] hover:text-[#022c22]"
+                        }`}
                     >
                       {item.label}
                     </Link>
@@ -132,7 +130,7 @@ export function FiscalAppShell({
             </div>
 
             <div className="flex flex-wrap items-center gap-3 md:gap-4">
-              {headerMode === "search" ? (
+              {/* {headerMode === "search" ? (
                 <label className="flex min-w-[200px] max-w-md flex-1 items-center gap-2 rounded-full bg-[#f2f4f6] px-4 py-2">
                   <img
                     src={figmaAssets.searchIcon}
@@ -164,15 +162,15 @@ export function FiscalAppShell({
                     className="h-1 w-2 object-contain opacity-70"
                   />
                 </button>
-              )}
+              )} */}
 
-              <button
+              {/* <button
                 type="button"
                 onClick={onAddTransaction}
                 className="rounded-full bg-[#003526] px-6 py-2.5 text-sm font-bold text-white transition hover:bg-[#004e39]"
               >
                 Add Transaction
-              </button>
+              </button> */}
               <div className="flex items-center gap-2 border-l border-slate-200/80 pl-3">
                 <button
                   type="button"
@@ -181,13 +179,13 @@ export function FiscalAppShell({
                 >
                   <img src={figmaAssets.bell} alt="" className="h-5 w-4 object-contain" />
                 </button>
-                <button
-                  type="button"
+                <Link
+                  to="/settings"
                   className="rounded-full p-2 text-[#404944] hover:bg-white/80"
                   aria-label="Settings"
                 >
                   <img src={figmaAssets.settings} alt="" className="h-5 w-5 object-contain" />
-                </button>
+                </Link>
                 <div className="pl-1">
                   <div className="size-10 overflow-hidden rounded-full border-2 border-[#a6f2d1]">
                     <img

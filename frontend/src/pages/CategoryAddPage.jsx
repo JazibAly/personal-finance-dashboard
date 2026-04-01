@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiscalAppShell } from "../components/fiscal/FiscalAppShell";
-import { createCategory } from "../services/api";
+import { createCategory, createIncomeSource } from "../services/api";
 
 const DEFAULT_USER_ID = 1;
 
@@ -27,13 +27,15 @@ export function CategoryAddPage() {
     }
 
     try {
-      await createCategory({
-        user_id: DEFAULT_USER_ID,
-        name,
-        // If your backend schema doesn't accept 'type', remove this safely.
-        // Assuming backend is flexible or ignores extra properties for now.
-        type: formCategoryType, 
-      });
+      if (formCategoryType === "income") {
+        await createIncomeSource({ user_id: DEFAULT_USER_ID, name });
+      } else {
+        await createCategory({
+          user_id: DEFAULT_USER_ID,
+          name,
+          type: formCategoryType, 
+        });
+      }
       
       setFormMsg("Category created successfully!");
       setFormCategoryName("");

@@ -8,10 +8,10 @@ const DEFAULT_USER_ID = 1;
 export function IncomeAddPage() {
   const navigate = useNavigate();
   const [incomeSources, setIncomeSources] = useState([]);
-  const [formSourceName, setFormSourceName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [title, setTitle] = useState("");
   const [formAmount, setFormAmount] = useState("");
   const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [formDescription, setFormDescription] = useState("");
   const [formBusy, setFormBusy] = useState(false);
   const [formMsg, setFormMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -27,9 +27,9 @@ export function IncomeAddPage() {
     setFormBusy(true);
     setFormMsg("");
     setErrorMsg("");
-    const name = formSourceName.trim();
-    if (!name) {
-      setErrorMsg("Enter an inflow source name.");
+    const desc = title.trim();
+    if (!categoryId || !desc) {
+      setErrorMsg("Please select an income category and enter a title.");
       setFormBusy(false);
       return;
     }
@@ -40,24 +40,17 @@ export function IncomeAddPage() {
       return;
     }
     try {
-      let sourceId = incomeSources.find(
-        (s) => s.name.toLowerCase() === name.toLowerCase()
-      )?.id;
-      if (!sourceId) {
-        const created = await createIncomeSource({ user_id: DEFAULT_USER_ID, name });
-        sourceId = created.id;
-        setIncomeSources((prev) => [...prev, created]);
-      }
+
       await createIncome({
         user_id: DEFAULT_USER_ID,
-        source_id: Number(sourceId),
+        source_id: Number(categoryId),
         amount,
         date: formDate,
-        description: formDescription.trim() || null,
+        description: desc,
       });
       setFormMsg("Inflow recorded successfully!");
       setFormAmount("");
-      setFormDescription("");
+      setTitle("");
       // Optionally navigate to overview after a small delay
       setTimeout(() => {
         navigate("/income");
@@ -91,17 +84,38 @@ export function IncomeAddPage() {
 
         <div className="rounded-2xl bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)] lg:p-12">
           <form className="flex flex-col gap-8" onSubmit={onSubmitIncome}>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="sourceName" className="text-sm font-bold uppercase tracking-wide text-[#404944]">
-                Inflow source
-              </label>
-              <input
-                id="sourceName"
-                className="rounded-xl border-0 bg-[#f7f9fb] px-5 py-4 text-base text-[#191c1e] outline-none ring-1 ring-inset ring-transparent transition placeholder:text-[#94a3b8] focus:ring-2 focus:ring-[#003526]"
-                placeholder="e.g. Salary, Consulting"
-                value={formSourceName}
-                onChange={(e) => setFormSourceName(e.target.value)}
-              />
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="categoryId" className="text-sm font-bold uppercase tracking-wide text-[#404944]">
+                  Income Category
+                </label>
+                <select
+                  id="categoryId"
+                  className="rounded-xl border-0 bg-[#f7f9fb] px-5 py-4 text-base text-[#191c1e] outline-none ring-1 ring-inset ring-transparent transition focus:ring-2 focus:ring-[#003526]"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                >
+                  <option value="">Select Category</option>
+                  {incomeSources.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="title" className="text-sm font-bold uppercase tracking-wide text-[#404944]">
+                  Title
+                </label>
+                <input
+                  id="title"
+                  className="rounded-xl border-0 bg-[#f7f9fb] px-5 py-4 text-base text-[#191c1e] outline-none ring-1 ring-inset ring-transparent transition placeholder:text-[#94a3b8] focus:ring-2 focus:ring-[#003526]"
+                  placeholder="e.g. XYZ Agency Work"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -136,19 +150,7 @@ export function IncomeAddPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="description" className="text-sm font-bold uppercase tracking-wide text-[#404944]">
-                Description
-              </label>
-              <textarea
-                id="description"
-                rows={3}
-                className="resize-y rounded-xl border-0 bg-[#f7f9fb] px-5 py-4 text-base outline-none ring-1 ring-inset ring-transparent transition placeholder:text-[#94a3b8] focus:ring-2 focus:ring-[#003526]"
-                placeholder="Optional context about this income..."
-                value={formDescription}
-                onChange={(e) => setFormDescription(e.target.value)}
-              />
-            </div>
+
 
             {errorMsg && (
               <div className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-800">

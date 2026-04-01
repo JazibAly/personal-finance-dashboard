@@ -11,6 +11,7 @@ export function ExpenseAddPage() {
   
   const [amount, setAmount] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [title, setTitle] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [formBusy, setFormBusy] = useState(false);
@@ -30,8 +31,9 @@ export function ExpenseAddPage() {
     setErrorMsg("");
     
     const amt = Number(amount);
-    if (!categoryId || !Number.isFinite(amt) || amt <= 0) {
-      setErrorMsg("Please choose a category and enter a valid amount.");
+    const desc = title.trim();
+    if (!categoryId || !desc || !Number.isFinite(amt) || amt <= 0) {
+      setErrorMsg("Please enter a title, choose a category, and specify a valid amount.");
       setFormBusy(false);
       return;
     }
@@ -42,11 +44,12 @@ export function ExpenseAddPage() {
         category_id: Number(categoryId),
         amount: amt,
         date,
-        description: null, // As per original design schema
+        description: desc, // Using title as description
         payment_method: paymentMethod.trim() || null,
       });
       setFormMsg("Expense posted successfully!");
       setAmount("");
+      setTitle("");
       setPaymentMethod("");
       
       setTimeout(() => {
@@ -118,6 +121,19 @@ export function ExpenseAddPage() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="title" className="text-sm font-bold uppercase tracking-wide text-[#404944]">
+                Title
+              </label>
+              <input
+                id="title"
+                className="rounded-xl border-0 bg-[#f7f9fb] px-5 py-4 text-base text-[#191c1e] outline-none ring-1 ring-inset ring-transparent transition placeholder:text-[#94a3b8] focus:ring-2 focus:ring-[#003526]"
+                placeholder="e.g. Car Fuel, Team Lunch..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">

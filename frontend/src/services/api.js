@@ -110,3 +110,15 @@ export async function updateExpense(expenseId, payload) {
 export async function deleteExpense(expenseId) {
   return deleteJson(`/expenses/${expenseId}`);
 }
+
+export async function getBudgetOverview(userId) {
+  return fetchJson(`/dashboard/budget-overview?user_id=${userId}`);
+}
+
+export async function updateCategory(categoryId, payload) {
+  return putJson(`/categories/${categoryId}`, payload);
+}
+
+export async function updateUserSettings(userId, payload) {
+  return putJson(`/users/${userId}/settings`, payload);
+}

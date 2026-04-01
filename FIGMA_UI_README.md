@@ -135,6 +135,51 @@ When you add the next Figma frame `node-id`, append a new subsection under **Scr
 
 ---
 
+### Node `1:1274` — Settings Page
+
+**Figma URL:** [Open node 1:1274](https://www.figma.com/design/OUWkY7SxJ5isi5bzo1DSPi/Personal-Financial-Dashboard?node-id=1-1274&m=dev)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | Create independent `SettingsPage.jsx` routing to `/settings` | Done |
+| 2 | Add `updateUserSettings(userId, payload)` to API services | Done |
+| 3 | Figma layout: Profile Avatar panel on left, Tab selection architecture | Done |
+| 4 | Map layout parameters: General Information, Preferences, Security panels | Done |
+| 5 | Mock saving fallback integration handling unbuilt endpoints gracefully | Done |
+
+**Route:** `/settings` — `frontend/src/pages/SettingsPage.jsx`
+
+---
+
+### Node `1:1453` — Budget Dashboard
+
+**Figma URL:** [Open node 1:1453](https://www.figma.com/design/OUWkY7SxJ5isi5bzo1DSPi/Personal-Financial-Dashboard?node-id=1-1453&m=dev)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | Independent `BudgetsPage` using layout shell mapped to `/budgets` | Done |
+| 2 | Visual Bento grid interpreting exact telemetry fetched from `/dashboard/budget-overview` | Done |
+| 3 | Safe utilization boundaries computing red/amber warnings instantly mapping Figma design | Done |
+| 4 | Linked top bar "Create Category" routing to `/categories/add` | Done |
+
+**Route:** `/budgets` — `frontend/src/pages/BudgetsPage.jsx`
+
+---
+
+### Node `18:2` — Budget Add
+
+**Figma URL:** [Open node 18:2](https://www.figma.com/design/OUWkY7SxJ5isi5bzo1DSPi/Personal-Financial-Dashboard?node-id=18-2&m=dev)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | Dedicated routing mapping directly from "Budgets" Topnav menu | Done |
+| 2 | Safely binds updating `monthly_budget` against active `/categories/{id}` endpoint | Done |
+| 3 | Instant verification and redirection UI | Done |
+
+**Route:** `/budgets/add` — `frontend/src/pages/BudgetAddPage.jsx`
+
+---
+
 ## Completion log (append only)
 
 ### 2026-04-01 — Node `1-4` / `1:4` (Dashboard)
@@ -161,3 +206,11 @@ When you add the next Figma frame `node-id`, append a new subsection under **Scr
 ### 2026-04-01 — Node `1:1085` (Expense Add)
 
 - **Completed:** Built `ExpenseAddPage` for capturing expenses. Refactored `ExpensesPage` to separate the Quick entry UI and dedicated it entirely to visualizing expense history and filters. Verified standard global top bar handles Expense tracking insertion route.
+
+### 2026-04-01 — Node `1:1453` (Budgets) and `18:2` (Budget Add)
+
+- **Completed:** Established deep hooks to FastAPI `/dashboard/budget-overview` for tracking category-based spending telemetry against strict limits mapping `monthly_budget`. Built dynamic `BudgetsPage` bento grid representing safe vs compromised utilization limits with visual progress bars. Formatted a sleek dedicated `BudgetAddPage` exclusively focused on selecting existing categories and setting limits, connected straight into the universal top navigation.
+
+### 2026-04-01 — Node `1:1274` (Settings Page)
+
+- **Completed:** Built frontend-exclusive Settings layouts matching node blueprint `1:1274` including complete component state for multiple tabs ("General Info", "Preferences", "Security"), integrating directly with `App.jsx` + `FiscalAppShell.jsx` (sidebar navigation routed), and `updateUserSettings` in `api.js` capable of sending User metadata JSON via PUT request. Implemented soft-fallback UI catching the missing endpoint returning a mock success indicator bridging UX seamlessly towards eventual backend implementations.

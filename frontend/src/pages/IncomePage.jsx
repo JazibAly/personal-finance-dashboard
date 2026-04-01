@@ -271,8 +271,7 @@ export function IncomePage() {
                 </div>
 
                 <div className="hidden gap-4 border-b border-[#f2f4f6] pb-3 text-xs font-semibold uppercase tracking-wide text-[#94a3b8] sm:grid sm:grid-cols-12">
-                  <span className="sm:col-span-4 pl-1">Source</span>
-                  <span className="sm:col-span-3">Description</span>
+                  <span className="sm:col-span-7 pl-1">Title & Category</span>
                   <span className="sm:col-span-2">Date</span>
                   <span className="text-right sm:col-span-3 pr-1">Amount</span>
                 </div>
@@ -285,18 +284,17 @@ export function IncomePage() {
                         key={row.id}
                         className="grid gap-2 py-5 sm:grid-cols-12 sm:items-center transition hover:bg-slate-50/50 -mx-4 px-4 rounded-xl"
                       >
-                        <div className="flex items-center gap-4 sm:col-span-4">
+                        <div className="flex items-center gap-4 sm:col-span-7">
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ecfdf5] text-sm font-bold text-[#003526]">
-                            {src.slice(0, 1)}
+                            {(row.description || src).slice(0, 1).toUpperCase()}
                           </span>
                           <div>
-                            <p className="font-bold text-[#191c1e]">{src}</p>
-                            <p className="text-xs font-medium text-[#94a3b8]">Ledger deposit</p>
+                            <p className="font-bold text-[#191c1e]">{row.description || src}</p>
+                            <p className="inline-block mt-0.5 rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-[#003526]">
+                              {src}
+                            </p>
                           </div>
                         </div>
-                        <p className="text-sm font-medium text-[#404944] sm:col-span-3 truncate">
-                          {row.description || "—"}
-                        </p>
                         <p className="text-sm font-medium text-[#64748b] sm:col-span-2">
                           {formatDisplayDate(row.date)}
                         </p>
