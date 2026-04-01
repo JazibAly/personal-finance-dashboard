@@ -1,12 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import { FiscalAppShell } from "../components/fiscal/FiscalAppShell";
 import { figmaAssets } from "../figma/figmaAssets";
-import {
-  createExpense,
-  getCategories,
-  getExpenses,
-} from "../services/api";
+import { getCategories, getExpenses } from "../services/api";
 import { getCurrentMonthRange } from "../utils/dateRanges";
 import { getPreviousPeriodRange, percentChange } from "../utils/periodCompare";
 
@@ -40,19 +36,13 @@ function categoryTagClass(name) {
 }
 
 export function ExpensesPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [listFilter, setListFilter] = useState("all");
   const [search, setSearch] = useState("");
-
-  const [amount, setAmount] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [formBusy, setFormBusy] = useState(false);
-  const [formMsg, setFormMsg] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -135,40 +125,6 @@ export function ExpensesPage() {
     return rows.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [expenses, listFilter, search, catMap]);
 
-  async function postExpense(e) {
-    e.preventDefault();
-    setFormBusy(true);
-    setFormMsg("");
-    const amt = Number(amount);
-    if (!categoryId || !Number.isFinite(amt) || amt <= 0) {
-      setFormMsg("Choose a category and a valid amount.");
-      setFormBusy(false);
-      return;
-    }
-    try {
-      await createExpense({
-        user_id: DEFAULT_USER_ID,
-        category_id: Number(categoryId),
-        amount: amt,
-        date,
-        description: null,
-        payment_method: paymentMethod.trim() || null,
-      });
-      setFormMsg("Expense posted.");
-      setAmount("");
-      setPaymentMethod("");
-      await load();
-    } catch (err) {
-      setFormMsg(err instanceof Error ? err.message : "Could not save.");
-    } finally {
-      setFormBusy(false);
-    }
-  }
-
-  function scrollQuick() {
-    document.getElementById("quick-entry")?.scrollIntoView({ behavior: "smooth" });
-  }
-
   const filterPills = [
     { id: "all", label: "All Time" },
     { id: "month", label: "This Month" },
@@ -185,7 +141,7 @@ export function ExpensesPage() {
         year: "numeric",
       })}
       avatarVariant="expenses"
-      onAddTransaction={scrollQuick}
+      onAddTransaction={() => navigate("/expenses/add")}
     >
       {loading && (
         <div className="mx-auto max-w-[1440px] px-8 py-16 text-sm text-[#404944]">Loading…</div>
@@ -210,7 +166,7 @@ export function ExpensesPage() {
                 elegance with fiscal discipline.
               </p>
             </div>
-            <div className="relative overflow-hidden rounded-xl bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)] lg:col-span-5">
+            <div className="relative overflow-hidden rounded-xl bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)] lg:col-span-5 border border-slate-100">
               <div className="absolute -right-16 -top-16 size-32 rounded-full bg-[rgba(166,242,209,0.2)]" />
               <p className="text-right text-sm font-semibold uppercase tracking-[1.4px] text-[#404944]">
                 Total Monthly Summary
@@ -231,98 +187,26 @@ export function ExpensesPage() {
             </div>
           </section>
 
-          <div className="grid gap-12 lg:grid-cols-12">
-            <div id="quick-entry" className="lg:col-span-4">
-              <div className="rounded-xl bg-[#f2f4f6] p-8">
-                <h2 className="font-['Manrope',system-ui,sans-serif] text-xl font-bold text-[#003526]">
-                  Quick Entry
-                </h2>
-                <form className="mt-8 flex flex-col gap-6" onSubmit={postExpense}>
-                  <label className="flex flex-col gap-2">
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-[#404944]">
-                      Amount
-                    </span>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="rounded-lg border-0 bg-white px-4 py-4 text-xl font-bold text-[#191c1e] outline-none ring-1 ring-transparent placeholder:text-[#6b7280] focus:ring-2 focus:ring-[#003526]"
-                      placeholder="0.00"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                    />
-                  </label>
-                  <label className="flex flex-col gap-2">
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-[#404944]">
-                      Category
-                    </span>
-                    <select
-                      className="rounded-lg border-0 bg-white px-4 py-3 text-sm font-medium text-[#191c1e] outline-none focus:ring-2 focus:ring-[#003526]"
-                      value={categoryId}
-                      onChange={(e) => setCategoryId(e.target.value)}
-                    >
-                      <option value="">Select category</option>
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className="flex flex-col gap-2">
-                      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#404944]">
-                        Method
-                      </span>
-                      <input
-                        className="rounded-lg border-0 bg-white px-4 py-2.5 text-xs font-medium text-[#191c1e] outline-none focus:ring-2 focus:ring-[#003526]"
-                        placeholder="Platinum Card"
-                        value={paymentMethod}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                      />
-                    </label>
-                    <label className="flex flex-col gap-2">
-                      <span className="text-[10px] font-semibold uppercase tracking-wide text-[#404944]">
-                        Date
-                      </span>
-                      <input
-                        type="date"
-                        className="rounded-lg border-0 bg-white px-4 py-2.5 text-xs outline-none focus:ring-2 focus:ring-[#003526]"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                      />
-                    </label>
-                  </div>
-                  {formMsg && <p className="text-sm text-[#003526]">{formMsg}</p>}
-                  <button
-                    type="submit"
-                    disabled={formBusy}
-                    className="w-full rounded-full bg-[#003526] py-4 text-base font-semibold text-white shadow-lg transition hover:bg-[#004e39] disabled:opacity-60"
-                  >
-                    Post Expense
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-10 lg:col-span-8">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-wrap gap-2">
+          <div className="mx-auto w-full max-w-5xl">
+            <div className="flex flex-col gap-10">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap gap-3">
                   {filterPills.map((p) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => setListFilter(p.id)}
-                      className={`rounded-full px-6 py-2 text-xs font-semibold transition ${
+                      className={`rounded-full px-6 py-2.5 text-xs font-bold transition shadow-sm ${
                         listFilter === p.id
-                          ? "bg-[#003526] text-white shadow-md"
-                          : "bg-[#e6e8ea] text-[#404944] hover:bg-[#dce0e3]"
+                          ? "bg-[#003526] text-white"
+                          : "bg-white text-[#404944] hover:bg-[#e6e8ea] border border-slate-200"
                       }`}
                     >
                       {p.label}
                     </button>
                   ))}
                 </div>
-                <label className="flex items-center gap-2 rounded-lg bg-[#eceef0] px-4 py-2">
+                <label className="flex items-center gap-3 rounded-xl bg-white border border-slate-200 shadow-sm px-5 py-3">
                   <img
                     src={figmaAssets.searchIconExpenses}
                     alt=""
@@ -333,16 +217,16 @@ export function ExpensesPage() {
                     placeholder="Search entries…"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-40 border-0 bg-transparent text-xs font-medium text-[#191c1e] outline-none placeholder:text-[#94a3b8] sm:w-52"
+                    className="w-48 border-0 bg-transparent text-sm font-medium text-[#191c1e] outline-none placeholder:text-[#94a3b8] sm:w-64"
                   />
                 </label>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <div className="hidden px-6 text-[10px] font-semibold uppercase tracking-wide text-[#64748b] opacity-60 sm:grid sm:grid-cols-12">
+              <div className="flex flex-col gap-5">
+                <div className="hidden px-8 text-xs font-bold uppercase tracking-wide text-[#94a3b8] sm:grid sm:grid-cols-12">
                   <span className="sm:col-span-5">Description &amp; date</span>
                   <span className="sm:col-span-2">Category</span>
-                  <span className="sm:col-span-3">Method</span>
+                  <span className="sm:col-span-3 lg:pl-4">Method</span>
                   <span className="text-right sm:col-span-2">Amount</span>
                 </div>
 
@@ -353,27 +237,27 @@ export function ExpensesPage() {
                     return (
                       <li
                         key={row.id}
-                        className="rounded-xl border border-[#f2f4f6] bg-white p-6 shadow-sm"
+                        className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition hover:shadow-md"
                       >
                         <div className="grid gap-4 sm:grid-cols-12 sm:items-center">
                           <div className="sm:col-span-5">
-                            <p className="font-semibold text-[#191c1e]">
+                            <p className="font-bold text-[#191c1e]">
                               {row.description || catName}
                             </p>
-                            <p className="mt-1 text-sm text-[#64748b]">
+                            <p className="mt-1.5 text-sm font-medium text-[#94a3b8]">
                               {formatDisplayDate(row.date)}
                             </p>
                           </div>
                           <div className="sm:col-span-2">
                             <span
-                              className={`inline-block rounded-md px-2 py-1 text-[10px] font-bold uppercase ${categoryTagClass(catName)}`}
+                              className={`inline-block rounded-md px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider ${categoryTagClass(catName)}`}
                             >
-                              {catName.slice(0, 12)}
+                              {catName.slice(0, 15)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-[#404944] sm:col-span-3">
+                          <div className="flex items-center gap-2.5 text-sm font-semibold text-[#404944] sm:col-span-3 lg:pl-4">
                             <span
-                              className={`size-2 rounded-full ${
+                              className={`size-2.5 rounded-full ${
                                 /amex|card/i.test(row.payment_method || "")
                                   ? "bg-slate-400"
                                   : "bg-emerald-500"
@@ -392,23 +276,27 @@ export function ExpensesPage() {
                 </ul>
 
                 {filteredList.length === 0 && (
-                  <p className="py-12 text-center text-sm text-[#404944]">No expenses match this view.</p>
+                  <div className="py-16 text-center">
+                    <p className="text-sm font-medium text-[#64748b]">No expenses match this view.</p>
+                  </div>
                 )}
 
-                <button
-                  type="button"
-                  className="mx-auto rounded-full border-2 border-[#003526] px-8 py-3 text-xs font-bold uppercase tracking-wide text-[#003526] transition hover:bg-[#003526] hover:text-white"
-                >
-                  Discover older entries
-                </button>
+                <div className="mt-8 flex justify-center">
+                  <button
+                    type="button"
+                    className="rounded-full border-2 border-slate-200 px-8 py-3 text-sm font-bold uppercase tracking-wide text-[#64748b] transition hover:bg-slate-50 hover:text-[#003526]"
+                  >
+                    Discover older entries
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={scrollQuick}
-            className="fixed bottom-8 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#003526] text-2xl font-light text-white shadow-xl transition hover:bg-[#004e39]"
+            onClick={() => navigate("/expenses/add")}
+            className="fixed bottom-8 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#003526] text-2xl font-light text-white shadow-[0_8px_20px_-6px_rgba(0,53,38,0.5)] transition hover:bg-[#004e39] hover:-translate-y-1"
             aria-label="Add expense"
           >
             +

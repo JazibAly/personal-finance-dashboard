@@ -4,8 +4,8 @@ import { figmaAssets } from "../../figma/figmaAssets";
 
 const topNav = [
   { to: "/", label: "Dashboard", end: true },
-  { to: "/income", label: "Income", end: false },
-  { to: "/expenses", label: "Expenses", end: false },
+  { to: "/income/add", label: "Income", end: false },
+  { to: "/expenses/add", label: "Expenses", end: false },
   { to: "/budgets", label: "Budgets", end: false },
 ];
 

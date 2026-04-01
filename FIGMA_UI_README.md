@@ -93,6 +93,48 @@ When you add the next Figma frame `node-id`, append a new subsection under **Scr
 
 ---
 
+### Node `1-759` — Income Add
+
+**Figma URL:** [Open node 1-759](https://www.figma.com/design/OUWkY7SxJ5isi5bzo1DSPi/Personal-Financial-Dashboard?node-id=1-759&m=dev)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | Independent Income Add layout using AppShell | Done |
+| 2 | Capture Income Form integrated with topbar navigation | Done |
+| 3 | "+ Add Category" button linked to category screen | Done |
+
+**Route:** `/income/add` — `frontend/src/pages/IncomeAddPage.jsx`
+
+---
+
+### Node `1-917` — Category Add
+
+**Figma URL:** [Open node 1-917](https://www.figma.com/design/OUWkY7SxJ5isi5bzo1DSPi/Personal-Financial-Dashboard?node-id=1-917&m=dev)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | Independent Category Add layout with unified AppShell | Done |
+| 2 | Simple and clean form creation | Done |
+| 3 | Classification toggle (Income/Expense classification integration) | Done |
+
+**Route:** `/categories/add` — `frontend/src/pages/CategoryAddPage.jsx`
+
+---
+
+### Node `1-1085` — Expense Add
+
+**Figma URL:** [Open node 1-1085](https://www.figma.com/design/OUWkY7SxJ5isi5bzo1DSPi/Personal-Financial-Dashboard?node-id=1-1085&m=dev)
+
+| Step | Description | Status |
+|------|-------------|--------|
+| 1 | Independent Expense Add layout mimicking node `1:1085` | Done |
+| 2 | Refactored `ExpensesPage` removing data entry and improving overview | Done |
+| 3 | Connect proper TopNav and "+ Add Category" button link | Done |
+
+**Route:** `/expenses/add` — `frontend/src/pages/ExpenseAddPage.jsx`
+
+---
+
 ## Completion log (append only)
 
 ### 2026-04-01 — Node `1-4` / `1:4` (Dashboard)
@@ -107,3 +149,15 @@ When you add the next Figma frame `node-id`, append a new subsection under **Scr
 ### 2026-04-01 — Nodes `1:268` (Income) and `1:537` (Expenses)
 
 - **Completed:** Added **`react-router-dom`** routes: `/`, `/income`, `/expenses`, `/budgets`. Refactored **`FiscalAppShell`** to use **`Link`** + active states; **Income** header uses **search** mode and MCP avatars; **IncomePage** and **ExpensesPage** implement Figma layouts with existing FastAPI calls (`getIncome`, `createIncome`, `createIncomeSource`, `getExpenses`, `createExpense`, `getCategories`). **Budgets** route shows a short placeholder. Stub UI: Income Filter/Export, Expenses “Discover older entries.”
+
+### 2026-04-01 — Node `1:759` (Income Add)
+
+- **Completed:** Decoupled data entry from `IncomePage` into independent `IncomeAddPage` matching Figma node `1:759`. Set up proper TopNav and routing to `/income/add`. Cleaned up `IncomePage` to serve strictly as an overview. Includes Category Add stub routing.
+
+### 2026-04-01 — Node `1:917` (Category Add)
+
+- **Completed:** Added independent category insertion UI corresponding to Figma node `1:917`. Properly routes to `/categories/add` and hooks strictly to `createCategory` backend. Added intuitive unified AppShell styling.
+
+### 2026-04-01 — Node `1:1085` (Expense Add)
+
+- **Completed:** Built `ExpenseAddPage` for capturing expenses. Refactored `ExpensesPage` to separate the Quick entry UI and dedicated it entirely to visualizing expense history and filters. Verified standard global top bar handles Expense tracking insertion route.

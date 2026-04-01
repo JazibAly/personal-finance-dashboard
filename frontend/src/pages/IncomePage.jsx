@@ -1,17 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { Link, useNavigate } from "react-router-dom";
 import { FiscalAppShell } from "../components/fiscal/FiscalAppShell";
-import {
-  createIncome,
-  createIncomeSource,
-  getIncome,
-  getIncomeSources,
-} from "../services/api";
+import { getIncome, getIncomeSources } from "../services/api";
 import { getCurrentMonthRange, getLast30DaysRange } from "../utils/dateRanges";
 import { getPreviousPeriodRange, percentChange } from "../utils/periodCompare";
 
 const DEFAULT_USER_ID = 1;
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 6;
 
 function sumIncome(rows) {
   return rows.reduce((s, r) => s + Number(r.amount || 0), 0);
@@ -46,19 +41,13 @@ function filterLast30Days(items) {
 const breakdownColors = ["bg-[#003526]", "bg-[#a6f2d1]", "bg-[#64748b]"];
 
 export function IncomePage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [income, setIncome] = useState([]);
   const [incomeSources, setIncomeSources] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
-  const [formSourceName, setFormSourceName] = useState("");
-  const [formAmount, setFormAmount] = useState("");
-  const [formDate, setFormDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [formDescription, setFormDescription] = useState("");
-  const [formBusy, setFormBusy] = useState(false);
-  const [formMsg, setFormMsg] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -158,50 +147,8 @@ export function IncomePage() {
     setPage(1);
   }, [search]);
 
-  async function onSubmitIncome(e) {
-    e.preventDefault();
-    setFormBusy(true);
-    setFormMsg("");
-    const name = formSourceName.trim();
-    if (!name) {
-      setFormMsg("Enter an inflow source name.");
-      setFormBusy(false);
-      return;
-    }
-    const amount = Number(formAmount);
-    if (!Number.isFinite(amount) || amount <= 0) {
-      setFormMsg("Enter a valid amount.");
-      setFormBusy(false);
-      return;
-    }
-    try {
-      let sourceId = incomeSources.find(
-        (s) => s.name.toLowerCase() === name.toLowerCase()
-      )?.id;
-      if (!sourceId) {
-        const created = await createIncomeSource({ user_id: DEFAULT_USER_ID, name });
-        sourceId = created.id;
-      }
-      await createIncome({
-        user_id: DEFAULT_USER_ID,
-        source_id: Number(sourceId),
-        amount,
-        date: formDate,
-        description: formDescription.trim() || null,
-      });
-      setFormMsg("Inflow recorded.");
-      setFormAmount("");
-      setFormDescription("");
-      await load();
-    } catch (err) {
-      setFormMsg(err instanceof Error ? err.message : "Could not save.");
-    } finally {
-      setFormBusy(false);
-    }
-  }
-
-  function scrollToCapture() {
-    document.getElementById("capture-income")?.scrollIntoView({ behavior: "smooth" });
+  function navToAddTransaction() {
+    navigate("/income/add");
   }
 
   return (
@@ -212,7 +159,7 @@ export function IncomePage() {
       onSearchChange={setSearch}
       searchPlaceholder="Search data..."
       avatarVariant="income"
-      onAddTransaction={scrollToCapture}
+      onAddTransaction={navToAddTransaction}
     >
       {loading && (
         <div className="mx-auto max-w-[1440px] px-8 py-16 text-sm text-[#404944]">Loading…</div>
@@ -226,7 +173,8 @@ export function IncomePage() {
       )}
 
       {!loading && !error && (
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-16 px-8 py-12">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-8 py-12">
+          
           <section className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-3">
               <p className="text-xs font-medium uppercase tracking-[1.2px] text-[#404944]">
@@ -248,13 +196,13 @@ export function IncomePage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-4">
-              <div className="min-w-[200px] rounded-xl bg-[#f2f4f6] px-6 py-6">
+              <div className="min-w-[200px] rounded-xl bg-[#f2f4f6] px-6 py-6 border border-slate-200/60">
                 <p className="text-xs text-[#404944]">Primary Source</p>
                 <p className="mt-1 font-['Manrope',system-ui,sans-serif] text-lg font-bold text-[#003526]">
                   {primarySource}
                 </p>
               </div>
-              <div className="min-w-[200px] rounded-xl bg-[#f2f4f6] px-6 py-6">
+              <div className="min-w-[200px] rounded-xl bg-[#f2f4f6] px-6 py-6 border border-slate-200/60">
                 <p className="text-xs text-[#404944]">Next Expected</p>
                 <p className="mt-1 font-['Manrope',system-ui,sans-serif] text-lg font-bold text-[#003526]">
                   {nextMonthFirstLabel()}
@@ -263,168 +211,93 @@ export function IncomePage() {
             </div>
           </section>
 
-          <div className="grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-4">
-              <div
-                id="capture-income"
-                className="flex flex-col gap-8 rounded-xl bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)]"
-              >
-                <div>
-                  <h2 className="font-['Manrope',system-ui,sans-serif] text-2xl font-bold text-[#003526]">
-                    Capture Income
-                  </h2>
-                  <p className="mt-2 text-sm text-[#404944]">
-                    Log new revenue streams to your ledger.
-                  </p>
+          <div className="grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-4 flex flex-col gap-8">
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)]">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="font-['Manrope',system-ui,sans-serif] text-lg font-bold text-[#003526]">
+                    Inflow Breakdown
+                  </h3>
+                  <span className="text-xs font-medium text-[#64748b]">Last 30 Days</span>
                 </div>
-                <form className="flex flex-col gap-6" onSubmit={onSubmitIncome}>
-                  <label className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-[#404944]">
-                      Inflow source
-                    </span>
-                    <input
-                      className="rounded-lg border-0 bg-[#e6e8ea] px-4 py-3 text-sm text-[#191c1e] outline-none ring-1 ring-transparent placeholder:text-[#6b7280] focus:ring-[#003526]"
-                      placeholder="e.g. Creative Consulting"
-                      value={formSourceName}
-                      onChange={(e) => setFormSourceName(e.target.value)}
-                    />
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className="flex flex-col gap-1">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-[#404944]">
-                        Amount
-                      </span>
-                      <input
-                        type="number"
-                        step="0.01"
-                        className="rounded-lg border-0 bg-[#e6e8ea] px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#003526]"
-                        placeholder="0.00"
-                        value={formAmount}
-                        onChange={(e) => setFormAmount(e.target.value)}
-                      />
-                    </label>
-                    <label className="flex flex-col gap-1">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-[#404944]">
-                        Date
-                      </span>
-                      <input
-                        type="date"
-                        className="rounded-lg border-0 bg-[#e6e8ea] px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#003526]"
-                        value={formDate}
-                        onChange={(e) => setFormDate(e.target.value)}
-                      />
-                    </label>
-                  </div>
-                  <label className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-[#404944]">
-                      Description
-                    </span>
-                    <textarea
-                      rows={3}
-                      className="resize-y rounded-lg border-0 bg-[#e6e8ea] px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#003526]"
-                      placeholder="Additional context…"
-                      value={formDescription}
-                      onChange={(e) => setFormDescription(e.target.value)}
-                    />
-                  </label>
-                  {formMsg && (
-                    <p className="text-sm text-[#003526]">{formMsg}</p>
+                <ul className="flex flex-col gap-6">
+                  {breakdown.length === 0 ? (
+                    <li className="text-sm text-[#404944]">No inflow in the last 30 days.</li>
+                  ) : (
+                    breakdown.map((row, i) => (
+                      <li key={row.name}>
+                        <div className="mb-2 flex justify-between text-sm">
+                          <span className="font-semibold text-[#191c1e]">{row.name}</span>
+                          <span className="font-medium text-[#404944]">{row.pct.toFixed(0)}%</span>
+                        </div>
+                        <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#f2f4f6]">
+                          <div
+                            className={`h-full rounded-full ${breakdownColors[i % breakdownColors.length]}`}
+                            style={{ width: `${Math.min(row.pct, 100)}%` }}
+                          />
+                        </div>
+                      </li>
+                    ))
                   )}
-                  <button
-                    type="submit"
-                    disabled={formBusy}
-                    className="w-full rounded-lg bg-[#003526] py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-[#004e39] disabled:opacity-60"
-                  >
-                    Confirm inflow
-                  </button>
-                </form>
-
-                <div className="border-t border-[#e8ebe9] pt-8">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="font-['Manrope',system-ui,sans-serif] text-lg font-bold text-[#003526]">
-                      Inflow Breakdown
-                    </h3>
-                    <span className="text-xs font-medium text-[#64748b]">Last 30 Days</span>
-                  </div>
-                  <ul className="flex flex-col gap-5">
-                    {breakdown.length === 0 ? (
-                      <li className="text-sm text-[#404944]">No inflow in the last 30 days.</li>
-                    ) : (
-                      breakdown.map((row, i) => (
-                        <li key={row.name}>
-                          <div className="mb-1 flex justify-between text-sm">
-                            <span className="font-medium text-[#191c1e]">{row.name}</span>
-                            <span className="text-[#404944]">{row.pct.toFixed(0)}%</span>
-                          </div>
-                          <div className="h-2 w-full overflow-hidden rounded-full bg-[#f2f4f6]">
-                            <div
-                              className={`h-full rounded-full ${breakdownColors[i % breakdownColors.length]}`}
-                              style={{ width: `${Math.min(row.pct, 100)}%` }}
-                            />
-                          </div>
-                        </li>
-                      ))
-                    )}
-                  </ul>
-                </div>
+                </ul>
               </div>
             </div>
 
             <div className="lg:col-span-8">
-              <div className="rounded-xl bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)]">
-                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)] h-full flex flex-col">
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <h2 className="font-['Manrope',system-ui,sans-serif] text-2xl font-bold text-[#003526]">
                       Income History
                     </h2>
-                    <p className="mt-1 text-sm text-[#404944]">
+                    <p className="mt-1 text-sm text-[#64748b]">
                       Chronological record of all revenue events.
                     </p>
                   </div>
                   <div className="flex gap-2">
                     <button
                       type="button"
-                      className="rounded-lg border border-[#e6e8ea] px-4 py-2 text-xs font-semibold text-[#404944]"
+                      className="rounded-lg bg-[#f2f4f6] px-4 py-2 text-xs font-semibold text-[#003526] hover:bg-[#e6e8ea] transition"
                     >
                       Filter
                     </button>
                     <button
                       type="button"
-                      className="rounded-lg border border-[#e6e8ea] px-4 py-2 text-xs font-semibold text-[#404944]"
+                      className="rounded-lg bg-[#f2f4f6] px-4 py-2 text-xs font-semibold text-[#003526] hover:bg-[#e6e8ea] transition"
                     >
                       Export
                     </button>
                   </div>
                 </div>
 
-                <div className="hidden gap-4 border-b border-[#f2f4f6] pb-2 text-[10px] font-semibold uppercase tracking-wide text-[#64748b] sm:grid sm:grid-cols-12">
-                  <span className="sm:col-span-4">Source</span>
+                <div className="hidden gap-4 border-b border-[#f2f4f6] pb-3 text-xs font-semibold uppercase tracking-wide text-[#94a3b8] sm:grid sm:grid-cols-12">
+                  <span className="sm:col-span-4 pl-1">Source</span>
                   <span className="sm:col-span-3">Description</span>
                   <span className="sm:col-span-2">Date</span>
-                  <span className="text-right sm:col-span-3">Amount</span>
+                  <span className="text-right sm:col-span-3 pr-1">Amount</span>
                 </div>
 
-                <ul className="divide-y divide-[#f2f4f6]">
+                <ul className="flex-1 divide-y divide-[#f2f4f6]">
                   {pageRows.map((row) => {
                     const src = sourceMap[row.source_id] || "Unknown";
                     return (
                       <li
                         key={row.id}
-                        className="grid gap-2 py-5 sm:grid-cols-12 sm:items-center"
+                        className="grid gap-2 py-5 sm:grid-cols-12 sm:items-center transition hover:bg-slate-50/50 -mx-4 px-4 rounded-xl"
                       >
-                        <div className="flex items-start gap-3 sm:col-span-4">
-                          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#ecfdf5] text-sm font-bold text-[#003526]">
+                        <div className="flex items-center gap-4 sm:col-span-4">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ecfdf5] text-sm font-bold text-[#003526]">
                             {src.slice(0, 1)}
                           </span>
                           <div>
-                            <p className="font-semibold text-[#191c1e]">{src}</p>
-                            <p className="text-xs text-[#64748b]">{src} / ledger</p>
+                            <p className="font-bold text-[#191c1e]">{src}</p>
+                            <p className="text-xs font-medium text-[#94a3b8]">Ledger deposit</p>
                           </div>
                         </div>
-                        <p className="text-sm text-[#404944] sm:col-span-3">
+                        <p className="text-sm font-medium text-[#404944] sm:col-span-3 truncate">
                           {row.description || "—"}
                         </p>
-                        <p className="text-sm text-[#404944] sm:col-span-2">
+                        <p className="text-sm font-medium text-[#64748b] sm:col-span-2">
                           {formatDisplayDate(row.date)}
                         </p>
                         <p className="text-right font-bold text-[#003526] sm:col-span-3">
@@ -436,11 +309,13 @@ export function IncomePage() {
                 </ul>
 
                 {sortedHistory.length === 0 && (
-                  <p className="py-8 text-center text-sm text-[#404944]">No income entries yet.</p>
+                  <div className="flex-1 flex items-center justify-center py-12">
+                     <p className="text-center text-sm font-medium text-[#64748b]">No income entries yet.</p>
+                  </div>
                 )}
 
-                <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-[#f2f4f6] pt-6 sm:flex-row">
-                  <p className="text-xs text-[#64748b]">
+                <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[#f2f4f6] pt-6 sm:flex-row">
+                  <p className="text-xs font-medium text-[#64748b]">
                     Showing {pageRows.length} of {sortedHistory.length} transactions
                   </p>
                   <div className="flex items-center gap-3">
@@ -448,18 +323,18 @@ export function IncomePage() {
                       type="button"
                       disabled={pageSafe <= 1}
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      className="rounded-lg border border-[#e6e8ea] px-3 py-1 text-sm disabled:opacity-40"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e6e8ea] text-sm font-bold text-[#404944] transition hover:bg-slate-50 disabled:opacity-40"
                     >
                       ‹
                     </button>
-                    <span className="text-sm font-medium text-[#404944]">
+                    <span className="text-sm font-semibold text-[#404944]">
                       Page {pageSafe} of {totalPages}
                     </span>
                     <button
                       type="button"
                       disabled={pageSafe >= totalPages}
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      className="rounded-lg border border-[#e6e8ea] px-3 py-1 text-sm disabled:opacity-40"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#e6e8ea] text-sm font-bold text-[#404944] transition hover:bg-slate-50 disabled:opacity-40"
                     >
                       ›
                     </button>
