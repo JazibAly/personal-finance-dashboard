@@ -1,41 +1,35 @@
-/** Asset URLs from Figma MCP — valid ~7 days; refresh via MCP if expired. */
+import BudgetsIcon from "../icons/Budgets.png";
+import ExpensesIcon from "../icons/Expenses.png";
+import IncomeIcon from "../icons/Income.png";
+import NotificationIcon from "../icons/Notification.png";
+import ReadyToInvestIcon from "../icons/Ready-to-Invest.png";
+import SavingsRateIcon from "../icons/Savings-Rate.png";
+import SearchIcon from "../icons/Search.png";
+import SettingsIcon from "../icons/Settings.png";
+import DashboardIcon from "../icons/dashboard.png";
+
+/** Asset URLs from local icons or fallback Data URIs */
 export const figmaAssets = {
-  userProfileAvatar:
-    "https://www.figma.com/api/mcp/asset/9ba530f4-f14a-413b-a041-7a7d3cd7bf41",
-  userProfileAvatarIncome:
-    "https://www.figma.com/api/mcp/asset/e0c6fec5-7759-48a6-9101-f0c581ac6f62",
-  userProfileAvatarExpenses:
-    "https://www.figma.com/api/mcp/asset/8bf11fd0-3edf-48bf-a271-2b3cc90006e4",
-  calendarIcon:
-    "https://www.figma.com/api/mcp/asset/4483d7f1-a009-4d81-9fdf-b0189f11daa3",
-  chevronDown:
-    "https://www.figma.com/api/mcp/asset/fc94b795-ae78-4f15-94cc-6e5ed6ce5311",
-  searchIcon:
-    "https://www.figma.com/api/mcp/asset/6beb68a0-04e5-47f6-9264-dfdcf75c09d3",
-  searchIconExpenses:
-    "https://www.figma.com/api/mcp/asset/ec4f6c34-c532-4a6a-972a-aa8e0f8ca9db",
-  bell:
-    "https://www.figma.com/api/mcp/asset/ac0bbad7-b452-4128-918a-5083efeac199",
-  settings:
-    "https://www.figma.com/api/mcp/asset/00ccfe43-ed71-492e-a253-50a5896b9e08",
-  navDashboard:
-    "https://www.figma.com/api/mcp/asset/5cd6f072-4a7c-4313-9ea5-4c8f5ca6880b",
-  navWallet:
-    "https://www.figma.com/api/mcp/asset/500b1e6e-32d6-4397-bc78-0558ceb75b2c",
-  navCard:
-    "https://www.figma.com/api/mcp/asset/4ed94162-d1ef-4c73-9c1f-1953f0086ed1",
-  navChart:
-    "https://www.figma.com/api/mcp/asset/33c43644-96c8-406a-9085-a8b44d55a80f",
-  navSettings:
-    "https://www.figma.com/api/mcp/asset/777a00e6-0d92-4097-a06e-8793af5aefc9",
-  navHelp:
-    "https://www.figma.com/api/mcp/asset/a4ad1950-15fd-4a0e-ba4c-410458b51bde",
-  trendUp:
-    "https://www.figma.com/api/mcp/asset/e064d544-6cea-4857-8237-6b4b50c38e62",
-  trendDown:
-    "https://www.figma.com/api/mcp/asset/14fc03ad-3068-4b2e-af9a-d5caea1b7e8f",
-  bank:
-    "https://www.figma.com/api/mcp/asset/465d4ea9-d8f7-486a-b6b0-acfc4af4ab9d",
-  spark:
-    "https://www.figma.com/api/mcp/asset/8f769971-f254-47a8-b759-0d506e56d691",
+  userProfileAvatar: "https://i.pravatar.cc/150?img=47",
+  userProfileAvatarIncome: "https://i.pravatar.cc/150?img=47",
+  userProfileAvatarExpenses: "https://i.pravatar.cc/150?img=47",
+  
+  calendarIcon: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E",
+  chevronDown: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E",
+  searchIcon: SearchIcon,
+  searchIconExpenses: SearchIcon,
+  bell: NotificationIcon,
+  settings: SettingsIcon,
+  
+  navDashboard: DashboardIcon,
+  navWallet: IncomeIcon,
+  navCard: ExpensesIcon,
+  navChart: BudgetsIcon,
+  navSettings: SettingsIcon,
+  navHelp: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='gray'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E",
+  
+  trendUp: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2310b981'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'/%3E%3C/svg%3E",
+  trendDown: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ef4444'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6'/%3E%3C/svg%3E",
+  bank: ReadyToInvestIcon,
+  spark: SavingsRateIcon,
 };

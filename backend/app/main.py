@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import create_db_and_tables
 from app import models  # noqa: F401
-from app.routers import categories, dashboard, expenses, income, income_sources
+from app.routers import auth, categories, dashboard, expenses, income, income_sources
 
 app = FastAPI(title="Personal Finance Dashboard API")
 
@@ -25,9 +25,10 @@ def on_startup() -> None:
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
-
+app.include_router(auth.router)
 app.include_router(categories.router)
 app.include_router(income_sources.router)
 app.include_router(income.router)
 app.include_router(expenses.router)
 app.include_router(dashboard.router)
+# Trigger hot reload

@@ -88,7 +88,7 @@ frontend/
 
 ### Feature Checklist
 
-- [ ] Authentication (future-ready multi-user support)
+- [x] Authentication (future-ready multi-user support)
 - [x] Income sources CRUD
 - [x] Income entries CRUD
 - [x] Categories CRUD (+ color + monthly budget)
@@ -295,6 +295,21 @@ Initial entry:
   - Add deployment configs/instructions for backend + frontend + production database wiring.
 - Notes/Blockers:
   - Existing user terminal backend failed due local PostgreSQL password mismatch; validation was executed with SQLite override on a temporary local server.
+
+### 2026-04-08 22:00
+- Completed:
+  - Added Backend Auth Architecture (`passlib`, `PyJWT`) and fully connected endpoints (`/auth/register`, `/auth/token`).
+  - Rewrote backend schema and all routers to determine execution environment via `get_current_user` JWT extraction instead of query spoofing.
+  - Built robust Frontend components: `LoginPage` and `RegisterPage` using clean minimal themes.
+  - Implemented Session Control routing mapping Bearer strings organically to requests.
+  - Implemented Application-wide global `<ProtectedRoute>` boundary rejecting rogue visitors.
+  - Dropped SQLite test database resetting environments cleanly to JWT-exclusive environments.
+- In progress:
+  - Phase 6 deployment preparation and resolving missing Settings preferences Endpoint.
+- Next step:
+  - Complete User settings backend update implementation schema.
+- Notes/Blockers:
+  - Authentication implemented structurally completely obliterating previous `user_id=1` hardcode scaffolding entirely.
 
 ## 11) Resume Instructions
 
