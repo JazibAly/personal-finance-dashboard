@@ -17,3 +17,11 @@ class Token(SQLModel):
 
 class TokenData(SQLModel):
     id: Optional[str] = None
+
+class UserSettings(SQLModel):
+    preferences: Optional[str] = None
+
+class UserUpdate(SQLModel):
+    email: Optional[str] = None
+    password: Optional[str] = None
+    preferences: Optional[str] = None

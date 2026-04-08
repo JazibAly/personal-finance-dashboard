@@ -18,8 +18,7 @@ def create_expense(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ) -> Expense:
-    expense = Expense.model_validate(payload)
-    expense.user_id = current_user.id
+    expense = Expense(**payload.model_dump(), user_id=current_user.id)
     session.add(expense)
     session.commit()
     session.refresh(expense)

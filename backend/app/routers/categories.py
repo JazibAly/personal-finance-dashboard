@@ -15,8 +15,7 @@ def create_category(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ) -> Category:
-    category = Category.model_validate(payload)
-    category.user_id = current_user.id
+    category = Category(**payload.model_dump(), user_id=current_user.id)
     session.add(category)
     session.commit()
     session.refresh(category)

@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.database import get_session
 from app.models.entities import User
-from app.schemas.user import Token, UserCreate, UserResponse
+from app.schemas.user import Token, UserCreate, UserResponse, UserSettings
 from app.services.auth_service import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_access_token,
@@ -55,4 +55,16 @@ def login_for_access_token(
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@router.patch("/settings", response_model=UserResponse)
+def update_settings(
+    payload: UserSettings,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+) -> User:
+    current_user.preferences = payload.preferences or current_user.preferences
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
     return current_user

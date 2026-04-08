@@ -15,8 +15,7 @@ def create_income_source(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ) -> IncomeSource:
-    income_source = IncomeSource.model_validate(payload)
-    income_source.user_id = current_user.id
+    income_source = IncomeSource(**payload.model_dump(), user_id=current_user.id)
     session.add(income_source)
     session.commit()
     session.refresh(income_source)

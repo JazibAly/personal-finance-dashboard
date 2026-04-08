@@ -18,8 +18,7 @@ def create_income(
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user)
 ) -> Income:
-    income = Income.model_validate(payload)
-    income.user_id = current_user.id
+    income = Income(**payload.model_dump(), user_id=current_user.id)
     session.add(income)
     session.commit()
     session.refresh(income)
