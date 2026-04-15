@@ -144,7 +144,7 @@ export function ExpensesPage() {
       onAddTransaction={() => navigate("/expenses/add")}
     >
       {loading && (
-        <div className="mx-auto max-w-[1440px] px-8 py-16 text-sm text-[#404944]">Loading…</div>
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-8 py-16 text-sm text-[#404944]">Loading…</div>
       )}
       {error && (
         <div className="mx-auto max-w-[1440px] px-8 py-6">
@@ -155,7 +155,7 @@ export function ExpensesPage() {
       )}
 
       {!loading && !error && (
-        <div className="relative mx-auto max-w-[1440px] px-8 py-12">
+        <div className="relative mx-auto max-w-[1440px] px-4 sm:px-8 py-8 sm:py-12">
           <section className="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="space-y-4 lg:col-span-7">
               <h1 className="font-['Manrope',system-ui,sans-serif] text-5xl font-extrabold leading-none tracking-[-3.6px] text-[#003526] sm:text-6xl sm:leading-[4.5rem] lg:text-[72px] lg:leading-[72px]">

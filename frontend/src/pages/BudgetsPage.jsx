@@ -43,7 +43,7 @@ export function BudgetsPage() {
       onAddTransaction={navToAddBudget}
       avatarVariant="default"
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-8 py-12">
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 sm:gap-10 sm:px-8 py-8 sm:py-12">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="font-['Manrope',system-ui,sans-serif] text-4xl font-extrabold tracking-[-2px] text-[#003526] lg:text-5xl">
