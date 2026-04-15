@@ -1,223 +1,260 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
 import { figmaAssets } from "../../figma/figmaAssets";
 
-const topNav = [
-  { to: "/", label: "Dashboard", end: true },
-  { to: "/income/add", label: "Income", end: false },
-  { to: "/expenses/add", label: "Expenses", end: false },
-  { to: "/budgets/add", label: "Budgets", end: false },
-];
-
 const sidebarNav = [
-  { to: "/", end: true, icon: figmaAssets.navDashboard, label: "Dashboard" },
-  { to: "/income", end: false, icon: figmaAssets.navWallet, label: "Income" },
-  { to: "/expenses", end: false, icon: figmaAssets.navCard, label: "Expenses" },
-  { to: "/budgets", end: false, icon: figmaAssets.navChart, label: "Budgets" },
+  {
+    label: "Dashboard",
+    to: "/",
+    icon: figmaAssets.navDashboard,
+    end: true
+  },
+  {
+    label: "Income",
+    to: "/income",
+    icon: figmaAssets.navWallet,
+    subItems: [
+      { label: "Add Income", to: "/income/add" },
+    ]
+  },
+  {
+    label: "Expenses",
+    to: "/expenses",
+    icon: figmaAssets.navCard,
+    subItems: [
+      { label: "Add Expense", to: "/expenses/add" },
+    ]
+  },
+  {
+    label: "Budgets",
+    to: "/budgets",
+    icon: figmaAssets.navChart,
+    subItems: [
+      { label: "Add Budget", to: "/budgets/add" },
+    ]
+  },
 ];
 
-const sidebarFooter = [
-  { id: "settings", to: "/settings", icon: figmaAssets.navSettings, label: "Settings" },
-  { id: "help", to: "#", icon: figmaAssets.navHelp, label: "Help" },
-];
-
-function navActive(pathname, to, end) {
-  if (end) return pathname === "/";
-  return pathname === to || pathname.startsWith(`${to}/`);
-}
-
-function avatarSrc(variant) {
-  // if (variant === "income") return figmaAssets.userProfileAvatarIncome;
-  // if (variant === "expenses") return figmaAssets.userProfileAvatarIncome;
-  return figmaAssets.userProfileAvatar;
-}
-
-/**
- * @param {"date" | "search"} headerMode
- * @param {"default" | "income" | "expenses"} headerTone
- */
-export function FiscalAppShell({
-  children,
-  headerMode = "date",
-  headerTone = "default",
-  dateLabel,
-  searchValue = "",
-  onSearchChange,
-  searchPlaceholder = "Search data...",
-  onAddTransaction,
-  avatarVariant = "default",
-}) {
-  const location = useLocation();
-  const pathname = location.pathname;
+export function FiscalAppShell({ children }) {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMenus, setOpenMenus] = useState({});
+
+  // Toggle sub-menu
+  const toggleSubMenu = (label) => {
+    setOpenMenus(prev => ({ ...prev, [label]: !prev[label] }));
+  };
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const headerBg =
-    headerTone === "income"
-      ? "bg-[rgba(236,253,245,0.5)]"
-      : "bg-[rgba(247,249,251,0.7)]";
+  const NavItem = ({ item, isMobile = false }) => {
+    const isActive = pathname === item.to || (item.subItems && item.subItems.some(sub => pathname === sub.to));
+    const hasSubItems = item.subItems && item.subItems.length > 0;
+    const isMenuOpen = !!openMenus[item.label];
 
-  return (
-    <div className="relative min-h-screen bg-[#f7f9fb]">
-      <aside
-        className="fixed left-0 top-0 z-20 flex h-full w-20 flex-col items-center justify-between border-r border-[rgba(191,201,195,0.15)] bg-[#f2f4f6] py-8"
-        aria-label="Primary navigation"
-      >
-        {/* <Link to="/" className="flex flex-col items-center px-2">
-          <span className="text-[24px] font-semibold leading-8 tracking-[-1.2px] text-[#022c22]">
-            SW
-          </span>
-        </Link> */}
-        <nav className="flex flex-1 flex-col items-center gap-8 pt-6" aria-label="App sections">
-          {sidebarNav.map((item) => {
-            const active = navActive(pathname, item.to, item.end);
-            return (
+    return (
+      <div className="w-full">
+        <div
+          onClick={() => navigate(item.to)}
+          className={`group flex items-center justify-between rounded-lg px-3 py-1.5 cursor-pointer transition-all duration-200 ${isActive
+            ? "bg-[#10b981] text-white shadow-[0px_4px_10px_rgba(16,185,129,0.15)]"
+            : "text-[#475569] hover:bg-emerald-50 hover:text-[#10b981]"
+            } ${isCollapsed && !isMobile ? "justify-center" : ""}`}
+        >
+          <div className={`flex items-center gap-2.5 ${isCollapsed && !isMobile ? "flex-col gap-1 text-center" : ""}`}>
+            <div className={`p-1.5 rounded-lg transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"}`}>
+              <img src={item.icon} alt="" className={`w-4 h-4 object-contain ${isActive ? "brightness-0 invert" : ""}`} />
+            </div>
+            {(!isCollapsed || isMobile) && (
+              <span className="font-semibold tracking-tight text-[13px]">{item.label}</span>
+            )}
+          </div>
+          {hasSubItems && (!isCollapsed || isMobile) && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSubMenu(item.label);
+              }}
+              className={`p-1 rounded-md transition-colors ${isActive ? "hover:bg-white/20" : "hover:bg-emerald-100"}`}
+            >
+              <img
+                src={figmaAssets.chevronDown}
+                alt=""
+                className={`w-3 h-3 transition-transform duration-200 ${isActive ? "brightness-0 invert" : ""} ${isMenuOpen ? "rotate-180" : ""}`}
+              />
+            </div>
+          )}
+        </div>
+
+        {hasSubItems && isMenuOpen && (!isCollapsed || isMobile) && (
+          <div className="mt-0.5 ml-10 flex flex-col gap-0.5 border-l border-emerald-100 pl-3">
+            {item.subItems.map(sub => (
               <Link
-                key={`${item.to}-${item.label}`}
-                to={item.to}
-                title={item.label}
-                className={`flex w-full items-center justify-center rounded-lg p-3 transition ${active
-                  ? "bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
-                  : "opacity-50 hover:opacity-80"
+                key={sub.to}
+                to={sub.to}
+                className={`py-1 text-[12px] font-medium transition-colors ${pathname === sub.to ? "text-[#10b981]" : "text-[#64748b] hover:text-[#10b981]"
                   }`}
               >
-                <img src={item.icon} alt="" className="h-[18px] w-[18px] object-contain" />
+                {sub.label}
               </Link>
-            );
-          })}
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex min-h-screen bg-[#f8fafc]">
+      {/* Mobile Header (Hamburger) */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-white px-6 py-4 border-b border-emerald-100 shadow-sm">
+        <div className="flex items-center gap-2">
+          <img src={figmaAssets.logoEmerald} alt="" className="w-8 h-8" />
+          <span className="text-lg font-bold text-[#064e3b] tracking-tight">Emerald Ledger</span>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="p-2 rounded-lg bg-emerald-50 text-emerald-600"
+        >
+          <img src={figmaAssets.iconMenu} alt="" className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Slide-out Drawer (Mobile Overlay) */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-[60] flex">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <aside className="relative w-full max-w-[300px] bg-white h-full shadow-2xl flex flex-col animate-slide-in">
+            <div className="p-6 border-b border-emerald-50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <img src={figmaAssets.logoEmerald} alt="" className="w-8 h-8" />
+                <span className="text-xl font-bold text-[#064e3b]">Emerald</span>
+              </div>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-emerald-50 rounded-lg">
+                <img src={figmaAssets.iconClose} alt="" className="w-6 h-6" />
+              </button>
+            </div>
+
+            <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+              {sidebarNav.map(item => <NavItem key={item.label} item={item} isMobile />)}
+            </nav>
+
+            <div className="p-4 border-t border-emerald-50 flex flex-col gap-1">
+              <Link
+                to="/settings"
+                className="flex items-center gap-2.5 px-3 py-1.5 text-[#475569] hover:bg-emerald-50 hover:text-emerald-600 rounded-lg font-semibold transition-colors shrink-0 text-[13px]"
+              >
+                <img src={figmaAssets.settings} alt="" className="w-4 h-4" />
+                <span>Settings</span>
+              </Link>
+              <button className="flex items-center gap-2.5 px-3 py-1.5 text-[#475569] hover:bg-emerald-50 hover:text-emerald-600 rounded-lg font-semibold transition-colors shrink-0 text-[13px]">
+                <div className="relative">
+                  <img src={figmaAssets.bell} alt="" className="w-4 h-4" />
+                  <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 border border-white rounded-full" />
+                </div>
+                <span>Notifications</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2.5 px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg font-semibold text-[13px]"
+              >
+                <span>Logout</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* Sidebar (Desktop) */}
+      <aside
+        className={`hidden lg:flex fixed left-0 top-0 h-full z-40 flex-col bg-white border-r border-emerald-100 shadow-xl transition-all duration-300 ease-in-out ${isCollapsed ? "w-30" : "w-72"
+          }`}
+      >
+        <div className={`p-4 mb-1 flex items-center ${isCollapsed ? "justify-center" : "gap-2"}`}>
+          <img src={figmaAssets.logoEmerald} alt="Logo" className="w-8 h-8 drop-shadow-sm" />
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <span className="text-lg font-black text-[#064e3b] leading-tight tracking-tighter">EMERALD</span>
+              <span className="text-[10px] font-bold text-[#10b981] letter tracking-[0.15em]">LEDGER</span>
+            </div>
+          )}
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-4 flex flex-col gap-2">
+          {sidebarNav.map(item => <NavItem key={item.label} item={item} />)}
         </nav>
-        <div className="flex flex-col items-center gap-4">
-          {sidebarFooter.map((item) => (
-            <Link
-              key={item.id}
-              to={item.to}
-              title={item.label}
-              className="rounded-lg p-3 opacity-60 transition hover:opacity-100"
+
+        <div className="p-4 border-t border-emerald-50 flex flex-col gap-1">
+          <Link
+            to="/settings"
+            className={`flex items-center group transition-all duration-200 rounded-lg p-2 hover:bg-emerald-50 ${isCollapsed ? "justify-center" : "gap-3 px-3"}`}
+            title="Settings"
+          >
+            <img src={figmaAssets.settings} alt="" className="w-5 h-5 object-contain text-[#475569] group-hover:text-emerald-600" />
+            {!isCollapsed && <span className="font-semibold text-[13px] text-[#475569] group-hover:text-emerald-600">Settings</span>}
+          </Link>
+
+          <button
+            className={`flex items-center group transition-all duration-200 rounded-lg p-2 hover:bg-emerald-50 ${isCollapsed ? "justify-center" : "gap-3 px-3"}`}
+            title="Notifications"
+          >
+            <div className="relative">
+              <img src={figmaAssets.bell} alt="" className="w-5 h-5 object-contain text-[#475569] group-hover:text-emerald-600" />
+              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full animate-pulse" />
+            </div>
+            {!isCollapsed && <span className="font-semibold text-[13px] text-[#475569] group-hover:text-emerald-600">Notifications</span>}
+          </button>
+
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className={`flex items-center group transition-all duration-200 rounded-lg p-2 hover:bg-emerald-50 ${isCollapsed ? "justify-center" : "gap-3 px-3"}`}
+            title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            <img
+              src={isCollapsed ? figmaAssets.iconExpand : figmaAssets.iconCollapse}
+              alt=""
+              className="w-5 h-5 object-contain text-[#475569] group-hover:text-emerald-600"
+            />
+            {!isCollapsed && <span className="font-semibold text-[13px] text-[#475569] group-hover:text-emerald-600">Collapse View</span>}
+          </button>
+
+          <div className={`mt-2 pt-2 border-t border-emerald-50 flex flex-col gap-1 ${isCollapsed ? "items-center" : ""}`}>
+            <button
+              onClick={handleLogout}
+              className={`flex items-center p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors ${isCollapsed ? "justify-center" : "gap-3 px-3 font-semibold text-[13px]"}`}
             >
-              <img src={item.icon} alt="" className="h-5 w-5 object-contain" />
-            </Link>
-          ))}
+              <span className={isCollapsed ? "text-xs font-bold" : ""}>Logout</span>
+            </button>
+          </div>
         </div>
       </aside>
 
-      <div className="flex min-h-screen flex-col pl-20">
-        <header
-          className={`sticky top-0 z-30 w-full border-b border-transparent ${headerBg} shadow-[0px_12px_32px_0px_rgba(6,78,59,0.06)] backdrop-blur-[12px]`}
-        >
-          <div className="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-8 py-4">
-            <div className="flex min-w-0 flex-wrap items-center gap-6 lg:gap-12">
-              <Link
-                to="/"
-                className="shrink-0 text-[20px] font-bold leading-7 tracking-[-1px] text-[#022c22]"
-              >
-                SpendWise
-              </Link>
-              <nav className="hidden items-center gap-6 md:flex" aria-label="Top navigation">
-                {topNav.map((item) => {
-                  const active = navActive(pathname, item.to, item.end);
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className={`relative pb-1.5 text-base font-semibold tracking-[-0.4px] ${active
-                        ? "border-b-2 border-[#064e3b] text-[#064e3b]"
-                        : "text-[#64748b] hover:text-[#022c22]"
-                        }`}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 md:gap-4">
-              {/* {headerMode === "search" ? (
-                <label className="flex min-w-[200px] max-w-md flex-1 items-center gap-2 rounded-full bg-[#f2f4f6] px-4 py-2">
-                  <img
-                    src={figmaAssets.searchIcon}
-                    alt=""
-                    className="h-[18px] w-[26px] shrink-0 object-contain opacity-70"
-                  />
-                  <input
-                    type="search"
-                    value={searchValue}
-                    onChange={(e) => onSearchChange?.(e.target.value)}
-                    placeholder={searchPlaceholder}
-                    className="min-w-0 flex-1 border-0 bg-transparent text-sm text-[#191c1e] outline-none placeholder:text-[#6b7280]"
-                  />
-                </label>
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#f2f4f6] px-4 py-2 text-sm font-medium text-[#191c1e]"
-                >
-                  <img
-                    src={figmaAssets.calendarIcon}
-                    alt=""
-                    className="h-3 w-3 object-contain"
-                  />
-                  {dateLabel}
-                  <img
-                    src={figmaAssets.chevronDown}
-                    alt=""
-                    className="h-1 w-2 object-contain opacity-70"
-                  />
-                </button>
-              )} */}
-
-              {/* <button
-                type="button"
-                onClick={onAddTransaction}
-                className="rounded-full bg-[#003526] px-6 py-2.5 text-sm font-bold text-white transition hover:bg-[#004e39]"
-              >
-                Add Transaction
-              </button> */}
-              <div className="flex items-center gap-2 border-l border-slate-200/80 pl-3">
-                <button
-                  type="button"
-                  className="rounded-full p-2 text-[#404944] hover:bg-white/80"
-                  aria-label="Notifications"
-                >
-                  <img src={figmaAssets.bell} alt="" className="h-5 w-4 object-contain" />
-                </button>
-                <Link
-                  to="/settings"
-                  className="rounded-full p-2 text-[#404944] hover:bg-white/80"
-                  aria-label="Settings"
-                >
-                  <img src={figmaAssets.settings} alt="" className="h-5 w-5 object-contain" />
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="rounded-full p-2 text-[#404944] hover:bg-white/80"
-                  aria-label="Log Out"
-                >
-                  <span className="text-sm font-semibold text-red-600">Logout</span>
-                </button>
-                <div className="pl-1">
-                  <div className="size-10 overflow-hidden rounded-full border-2 border-[#a6f2d1]">
-                    <img
-                      src={avatarSrc(avatarVariant)}
-                      alt=""
-                      className="size-full object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="relative z-10 flex-1">{children}</div>
-      </div>
+      {/* Main Content Area */}
+      <main
+        className={`flex-1 min-h-screen transition-all duration-300 ease-in-out ${isMobileMenuOpen ? "blur-sm" : ""
+          } pt-[72px] lg:pt-0`}
+        style={{ paddingLeft: typeof window !== 'undefined' && window.innerWidth >= 1024 ? (isCollapsed ? '160px' : '288px') : '0' }}
+      >
+        <div className="p-4 sm:p-6 lg:p-12 max-w-[1600px] mx-auto overflow-x-hidden">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
