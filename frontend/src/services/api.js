@@ -10,8 +10,18 @@ function toQueryString(params) {
   return search.toString();
 }
 
-async function fetchJson(path) {
-  const response = await fetch(`${API_BASE_URL}${path}`);
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+  return {};
+}
+
+export async function fetchJson(path) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: { ...getAuthHeaders() },
+  });
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
@@ -21,12 +31,21 @@ async function fetchJson(path) {
 async function postJson(path, body) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Request failed: ${response.status} ${text}`);
+    let detail = "Request failed";
+    try {
+      const parsed = await response.json();
+      if (parsed.detail) detail = parsed.detail;
+    } catch (e) {
+      // Not JSON format error probably
+    }
+    throw new Error(detail);
   }
   return response.json();
 }
@@ -34,41 +53,81 @@ async function postJson(path, body) {
 async function putJson(path, body) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Request failed: ${response.status} ${text}`);
+    let detail = "Request failed";
+    try {
+      const parsed = await response.json();
+      if (parsed.detail) detail = parsed.detail;
+    } catch (e) {}
+    throw new Error(detail);
   }
   return response.json();
 }
 
 async function deleteJson(path) {
-  const response = await fetch(`${API_BASE_URL}${path}`, { method: "DELETE" });
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "DELETE",
+    headers: { ...getAuthHeaders() },
+  });
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Request failed: ${response.status} ${text}`);
+    let detail = "Request failed";
+    try {
+      const parsed = await response.json();
+      if (parsed.detail) detail = parsed.detail;
+    } catch (e) {}
+    throw new Error(detail);
   }
   return response.json();
 }
 
-export async function getExpenses(userId, filters = {}) {
-  const query = toQueryString({ user_id: userId, ...filters });
-  return fetchJson(`/expenses?${query}`);
+export async function loginApi(email, password) {
+  const formData = new URLSearchParams();
+  formData.append("username", email);
+  formData.append("password", password);
+  const response = await fetch(`${API_BASE_URL}/auth/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: formData.toString(),
+  });
+  if (!response.ok) {
+    let detail = "Login failed";
+    try {
+      const parsed = await response.json();
+      if (parsed.detail) detail = parsed.detail;
+    } catch (e) {}
+    throw new Error(detail);
+  }
+  return response.json();
 }
 
-export async function getCategories(userId) {
-  return fetchJson(`/categories?user_id=${userId}`);
+export async function registerApi(email, password) {
+  return postJson("/auth/register", { email, password });
 }
 
-export async function getIncomeSources(userId) {
-  return fetchJson(`/income-sources?user_id=${userId}`);
+export async function getExpenses(filters = {}) {
+  const query = toQueryString(filters);
+  const qs = query ? `?${query}` : "";
+  return fetchJson(`/expenses${qs}`);
 }
 
-export async function getIncome(userId, filters = {}) {
-  const query = toQueryString({ user_id: userId, ...filters });
-  return fetchJson(`/income?${query}`);
+export async function getCategories() {
+  return fetchJson(`/categories`);
+}
+
+export async function getIncomeSources() {
+  return fetchJson(`/income-sources`);
+}
+
+export async function getIncome(filters = {}) {
+  const query = toQueryString(filters);
+  const qs = query ? `?${query}` : "";
+  return fetchJson(`/income${qs}`);
 }
 
 export async function createCategory(payload) {
@@ -111,8 +170,8 @@ export async function deleteExpense(expenseId) {
   return deleteJson(`/expenses/${expenseId}`);
 }
 
-export async function getBudgetOverview(userId) {
-  return fetchJson(`/dashboard/budget-overview?user_id=${userId}`);
+export async function getBudgetOverview() {
+  return fetchJson(`/dashboard/budget-overview`);
 }
 
 export async function updateCategory(categoryId, payload) {

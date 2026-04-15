@@ -4,7 +4,6 @@ from sqlmodel import SQLModel
 
 
 class IncomeSourceCreate(SQLModel):
-    user_id: int
     name: str
 
 

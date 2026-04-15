@@ -88,7 +88,7 @@ frontend/
 
 ### Feature Checklist
 
-- [ ] Authentication (future-ready multi-user support)
+- [x] Authentication (future-ready multi-user support)
 - [x] Income sources CRUD
 - [x] Income entries CRUD
 - [x] Categories CRUD (+ color + monthly budget)
@@ -295,6 +295,34 @@ Initial entry:
   - Add deployment configs/instructions for backend + frontend + production database wiring.
 - Notes/Blockers:
   - Existing user terminal backend failed due local PostgreSQL password mismatch; validation was executed with SQLite override on a temporary local server.
+
+### 2026-04-08 22:00
+- Completed:
+  - Added Backend Auth Architecture (`passlib`, `PyJWT`) and fully connected endpoints (`/auth/register`, `/auth/token`).
+  - Rewrote backend schema and all routers to determine execution environment via `get_current_user` JWT extraction instead of query spoofing.
+  - Built robust Frontend components: `LoginPage` and `RegisterPage` using clean minimal themes.
+  - Implemented Session Control routing mapping Bearer strings organically to requests.
+  - Implemented Application-wide global `<ProtectedRoute>` boundary rejecting rogue visitors.
+  - Dropped SQLite test database resetting environments cleanly to JWT-exclusive environments.
+- In progress:
+  - Debugging registration flow items.
+- Next step:
+  - Finalize multi-user data isolation.
+
+### 2026-04-09 04:30
+- Completed:
+  - Fixed database thread locking issues in SQLite by enabling `check_same_thread=False`.
+  - Resolved `bcrypt` version incompatibility with `passlib` by downgrading `bcrypt` to `3.2.2`.
+  - Fixed Pydantic validation errors in all CRUD routers (`categories`, `expenses`, `income`, `income_sources`) by correctly injecting `user_id` during model instantiation.
+  - Replaced expired Figma asset URLs with permanent local icons and robust inline SVGs.
+  - Implemented the missing `PATCH /auth/settings` endpoint for user preferences.
+  - Added `preferences` field to the `User` DB model to support UI customization.
+- In progress:
+  - Phase 6: Deployment preparation.
+- Next step:
+  - Final end-to-end testing of user isolation and deployment configuration.
+- Notes/Blockers:
+  - Authentication flow is now stable and multi-user data isolation is enforced at the database level.
 
 ## 11) Resume Instructions
 

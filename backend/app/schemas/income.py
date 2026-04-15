@@ -5,7 +5,6 @@ from sqlmodel import SQLModel
 
 
 class IncomeCreate(SQLModel):
-    user_id: int
     source_id: int
     amount: float
     date: date

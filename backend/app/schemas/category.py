@@ -5,7 +5,6 @@ from sqlmodel import SQLModel
 
 
 class CategoryCreate(SQLModel):
-    user_id: int
     name: str
     monthly_budget: float = 0
     color: str = "#8884d8"

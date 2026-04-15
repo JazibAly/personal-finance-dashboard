@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 import { figmaAssets } from "../../figma/figmaAssets";
 
@@ -49,6 +50,13 @@ export function FiscalAppShell({
 }) {
   const location = useLocation();
   const pathname = location.pathname;
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const headerBg =
     headerTone === "income"
@@ -186,6 +194,14 @@ export function FiscalAppShell({
                 >
                   <img src={figmaAssets.settings} alt="" className="h-5 w-5 object-contain" />
                 </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-full p-2 text-[#404944] hover:bg-white/80"
+                  aria-label="Log Out"
+                >
+                  <span className="text-sm font-semibold text-red-600">Logout</span>
+                </button>
                 <div className="pl-1">
                   <div className="size-10 overflow-hidden rounded-full border-2 border-[#a6f2d1]">
                     <img

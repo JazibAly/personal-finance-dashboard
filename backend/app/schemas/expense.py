@@ -5,7 +5,6 @@ from sqlmodel import SQLModel
 
 
 class ExpenseCreate(SQLModel):
-    user_id: int
     category_id: int
     amount: float
     description: Optional[str] = None
