@@ -268,7 +268,7 @@ export function DashboardPage() {
       )}
 
       {!loading && !error && (
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 sm:gap-12 sm:px-8 py-8 sm:py-12">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-8 py-12">
           <header className="flex flex-col gap-2">
             <h1 className="font-['Manrope',system-ui,sans-serif] text-4xl font-extrabold leading-10 tracking-[-0.9px] text-[#003526]">
               Intelligence Overview

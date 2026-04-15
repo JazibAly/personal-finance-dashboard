@@ -162,7 +162,7 @@ export function IncomePage() {
       onAddTransaction={navToAddTransaction}
     >
       {loading && (
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-8 py-16 text-sm text-[#404944]">Loading…</div>
+        <div className="mx-auto max-w-[1440px] px-8 py-16 text-sm text-[#404944]">Loading…</div>
       )}
       {error && (
         <div className="mx-auto max-w-[1440px] px-8 py-6">
@@ -173,7 +173,7 @@ export function IncomePage() {
       )}
 
       {!loading && !error && (
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 sm:gap-10 sm:px-8 py-8 sm:py-12">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-8 py-12">
           
           <section className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="space-y-3">
