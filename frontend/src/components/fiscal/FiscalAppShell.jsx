@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { figmaAssets } from "../../figma/figmaAssets";
+import spendwiseLogoFull from "../../assets/logo/spendwise_logo.png";
+import spendwiseLogoIcon from "../../assets/logo/Spendwise_logo_icon.png";
 
 const sidebarNav = [
   {
@@ -122,8 +124,7 @@ export function FiscalAppShell({ children }) {
       {/* Mobile Header (Hamburger) */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between bg-white px-6 py-4 border-b border-emerald-100 shadow-sm">
         <div className="flex items-center gap-2">
-          <img src={figmaAssets.logoEmerald} alt="" className="w-8 h-8" />
-          <span className="text-lg font-bold text-[#064e3b] tracking-tight">Emerald Ledger</span>
+          <img src={spendwiseLogoFull} alt="Spendwise" className="h-8 object-contain" />
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(true)}
@@ -142,9 +143,8 @@ export function FiscalAppShell({ children }) {
           />
           <aside className="relative w-full max-w-[300px] bg-white h-full shadow-2xl flex flex-col animate-slide-in">
             <div className="p-6 border-b border-emerald-50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <img src={figmaAssets.logoEmerald} alt="" className="w-8 h-8" />
-                <span className="text-xl font-bold text-[#064e3b]">Emerald</span>
+              <div className="flex items-center">
+                <img src={spendwiseLogoFull} alt="Spendwise" className="h-8 object-contain" />
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-emerald-50 rounded-lg">
                 <img src={figmaAssets.iconClose} alt="" className="w-6 h-6" />
@@ -186,14 +186,12 @@ export function FiscalAppShell({ children }) {
         className={`hidden lg:flex fixed left-0 top-0 h-full z-40 flex-col bg-white border-r border-emerald-100 shadow-xl transition-all duration-300 ease-in-out ${isCollapsed ? "w-30" : "w-72"
           }`}
       >
-        <div className={`p-4 mb-1 flex items-center ${isCollapsed ? "justify-center" : "gap-2"}`}>
-          <img src={figmaAssets.logoEmerald} alt="Logo" className="w-8 h-8 drop-shadow-sm" />
-          {!isCollapsed && (
-            <div className="flex flex-col">
-              <span className="text-lg font-black text-[#064e3b] leading-tight tracking-tighter">EMERALD</span>
-              <span className="text-[10px] font-bold text-[#10b981] letter tracking-[0.15em]">LEDGER</span>
-            </div>
-          )}
+        <div className={`p-4 mb-1 flex items-center ${isCollapsed ? "justify-center" : "px-6"}`}>
+          <img 
+            src={isCollapsed ? spendwiseLogoIcon : spendwiseLogoFull} 
+            alt="Spendwise" 
+            className={`${isCollapsed ? "w-8 h-8" : "h-10"} object-contain`} 
+          />
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 flex flex-col gap-2">
