@@ -13,7 +13,7 @@ function sumExp(rows) {
 }
 
 function formatMoney(n) {
-  return `$${Number(n || 0).toLocaleString("en-US", {
+  return `Rs. ${Number(n || 0).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -175,7 +175,7 @@ export function ExpensesPage() {
                 <span className="font-['Manrope',system-ui,sans-serif] text-4xl font-extrabold text-[#003526] sm:text-5xl">
                   {formatMoney(totalMonthly)}
                 </span>
-                <span className="text-lg font-semibold text-[#00513b]">USD</span>
+                <span className="text-lg font-semibold text-[#00513b]">PKR</span>
               </div>
               {expenseTrend !== null && !Number.isNaN(expenseTrend) && (
                 <div className="mt-2 flex items-center justify-end gap-2 text-sm font-semibold">

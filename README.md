@@ -130,7 +130,7 @@ frontend/
 
 ## 8) Database Schema (Target)
 
-- `users`: id, email, password_hash, created_at
+- `users`: id, email, password_hash, first_name, last_name, phone_number, preferences, created_at
 - `income_sources`: id, user_id, name, created_at
 - `income`: id, user_id, source_id, amount, date, description, created_at
 - `categories`: id, user_id, name, monthly_budget, color, created_at
@@ -317,12 +317,24 @@ Initial entry:
   - Replaced expired Figma asset URLs with permanent local icons and robust inline SVGs.
   - Implemented the missing `PATCH /auth/settings` endpoint for user preferences.
   - Added `preferences` field to the `User` DB model to support UI customization.
-- In progress:
-  - Phase 6: Deployment preparation.
-- Next step:
-  - Final end-to-end testing of user isolation and deployment configuration.
 - Notes/Blockers:
   - Authentication flow is now stable and multi-user data isolation is enforced at the database level.
+
+### 2026-04-16 04:30
+- Completed:
+  - Sidebar & Navigation Refinement: Implemented a collapsible sidebar (10rem/160px collapsed) with direct navigation icons and isolated sub-menu toggles.
+  - Mobile Responsiveness: Added a slide-out drawer for mobile navigation and fixed horizontal scroll issues on dashboard and fiscal pages.
+  - Dynamic Settings Page: Replaced static content with real-time data from `AuthContext`.
+  - User Profiles: Added `first_name`, `last_name`, and `phone_number` to the User model and schemas.
+  - Security Enhancement: Implemented `changePassword` functionality with current password verification on both frontend and backend.
+  - API Service Update: Extended `api.js` with authenticated `PATCH` and `POST` methods for profile and security updates.
+  - Database Migration: Ran migration script to add profile columns to the existing SQLite `local.db`.
+- In progress:
+  - Phase 5: Testing dynamic data persistence across all dashboard components.
+- Next step:
+  - Implement preference settings (currency, language) and dark mode support.
+- Notes/Blockers:
+  - `AuthContext` is now fully operational and syncs with the backend profile endpoints.
 
 ## 11) Resume Instructions
 

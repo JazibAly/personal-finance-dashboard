@@ -6,7 +6,7 @@ import { getBudgetOverview } from "../services/api";
 const DEFAULT_USER_ID = 1;
 
 function formatMoney(n) {
-  return `$${Number(n || 0).toLocaleString("en-US", {
+  return `Rs. ${Number(n || 0).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;

@@ -46,7 +46,7 @@ export function SummaryCards({ summary }) {
               <div>
                 <p className="text-sm font-medium text-ink-muted">{card.title}</p>
                 <p className="mt-2 text-2xl font-semibold tracking-tight text-ink">
-                  ${value.toFixed(2)}
+                  Rs. {value.toFixed(2)}
                 </p>
               </div>
               <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${card.bg} ${card.accent}`}>

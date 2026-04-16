@@ -34,7 +34,7 @@ export function BudgetOverview({ budgetOverview }) {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <strong className="font-semibold text-ink">{category.category_name}</strong>
                   <span className="text-sm font-medium tabular-nums text-ink-muted">
-                    ${category.spent.toFixed(2)} / ${category.budget.toFixed(2)}
+                    Rs. {category.spent.toFixed(2)} / Rs. {category.budget.toFixed(2)}
                   </span>
                 </div>
                 <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-200/80">

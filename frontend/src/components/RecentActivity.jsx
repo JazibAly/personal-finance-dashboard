@@ -69,7 +69,7 @@ export function RecentActivity({
                     item.type === "Income" ? "text-emerald-600" : "text-red-600"
                   }`}
                 >
-                  {item.type === "Income" ? "+" : "-"}${item.amount.toFixed(2)}
+                  {item.type === "Income" ? "+" : "-"}Rs. {item.amount.toFixed(2)}
                 </span>
                 <button
                   type="button"

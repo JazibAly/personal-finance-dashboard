@@ -124,12 +124,12 @@ export function IncomeAddPage() {
                   Amount
                 </label>
                 <div className="relative">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-lg font-bold text-[#64748b]">$</span>
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-lg font-bold text-[#64748b]">Rs.</span>
                   <input
                     id="amount"
                     type="number"
                     step="0.01"
-                    className="w-full rounded-xl border-0 bg-[#f7f9fb] pl-10 pr-5 py-4 text-base font-medium outline-none ring-1 ring-inset ring-transparent transition focus:ring-2 focus:ring-[#003526]"
+                    className="w-full rounded-xl border-0 bg-[#f7f9fb] pl-14 pr-5 py-4 text-base font-medium outline-none ring-1 ring-inset ring-transparent transition focus:ring-2 focus:ring-[#003526]"
                     placeholder="0.00"
                     value={formAmount}
                     onChange={(e) => setFormAmount(e.target.value)}

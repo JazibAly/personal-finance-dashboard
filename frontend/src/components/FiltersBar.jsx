@@ -37,11 +37,10 @@ export function FiltersBar({
                 key={p.value}
                 type="button"
                 onClick={() => onPeriodChange(p.value)}
-                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
-                  period === p.value
-                    ? "bg-brand text-white shadow-sm"
+                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${period === p.value
+                    ? "bg-[#004e39] text-white shadow-sm"
                     : "bg-slate-100 text-ink-muted hover:bg-slate-200/80 hover:text-ink"
-                }`}
+                  }`}
               >
                 {p.label}
               </button>

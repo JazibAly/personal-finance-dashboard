@@ -19,9 +19,12 @@ function getAuthHeaders() {
 }
 
 export async function fetchJson(path) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { ...getAuthHeaders() },
-  });
+  const token = localStorage.getItem("token");
+  const headers = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  const response = await fetch(`${API_BASE_URL}${path}`, { headers });
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status}`);
   }
@@ -29,23 +32,19 @@ export async function fetchJson(path) {
 }
 
 async function postJson(path, body) {
+  const token = localStorage.getItem("token");
+  const headers = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeaders(),
-    },
+    headers,
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    let detail = "Request failed";
-    try {
-      const parsed = await response.json();
-      if (parsed.detail) detail = parsed.detail;
-    } catch (e) {
-      // Not JSON format error probably
-    }
-    throw new Error(detail);
+    const text = await response.text();
+    throw new Error(`Request failed: ${response.status} ${text}`);
   }
   return response.json();
 }
@@ -180,4 +179,12 @@ export async function updateCategory(categoryId, payload) {
 
 export async function updateUserSettings(userId, payload) {
   return putJson(`/users/${userId}/settings`, payload);
+}
+
+export async function updateUserProfile(payload) {
+  return patchJson(`/auth/profile`, payload);
+}
+
+export async function changePassword(payload) {
+  return postJson(`/auth/password`, payload);
 }

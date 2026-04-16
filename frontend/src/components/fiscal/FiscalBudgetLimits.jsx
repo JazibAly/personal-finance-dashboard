@@ -1,5 +1,5 @@
 function formatMoney(n) {
-  return `$${Number(n || 0).toLocaleString("en-US", {
+  return `Rs. ${Number(n || 0).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -54,7 +54,7 @@ export function FiscalBudgetLimits({ budgetOverview }) {
                 <div className="flex justify-between text-[10px] font-medium text-[#404944]">
                   <span>Spent: {formatMoney(c.spent)}</span>
                   {exceeded ? (
-                    <span className="font-semibold text-[#ba1a1a]">$0.00 Left</span>
+                    <span className="font-semibold text-[#ba1a1a]">Rs. 0.00 Left</span>
                   ) : (
                     <span className="text-[#511f00]">Remaining: {formatMoney(remaining)}</span>
                   )}

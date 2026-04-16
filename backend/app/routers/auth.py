@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.database import get_session
 from app.models.entities import User
-from app.schemas.user import Token, UserCreate, UserResponse, UserSettings
+from app.schemas.user import Token, UserCreate, UserResponse, UserSettings, UserUpdate, PasswordUpdate
 from app.services.auth_service import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_access_token,
@@ -56,6 +56,43 @@ def login_for_access_token(
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+@router.patch("/profile", response_model=UserResponse)
+def update_profile(
+    payload: UserUpdate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+) -> User:
+    if payload.first_name is not None:
+        current_user.first_name = payload.first_name
+    if payload.last_name is not None:
+        current_user.last_name = payload.last_name
+    if payload.phone_number is not None:
+        current_user.phone_number = payload.phone_number
+    if payload.preferences is not None:
+        current_user.preferences = payload.preferences
+        
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return current_user
+
+@router.post("/password")
+def change_password(
+    payload: PasswordUpdate,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user)
+):
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect current password",
+        )
+    
+    current_user.password_hash = get_password_hash(payload.new_password)
+    session.add(current_user)
+    session.commit()
+    return {"status": "Password updated successfully"}
 
 @router.patch("/settings", response_model=UserResponse)
 def update_settings(

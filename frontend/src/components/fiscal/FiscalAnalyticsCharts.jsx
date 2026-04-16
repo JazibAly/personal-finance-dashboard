@@ -85,7 +85,7 @@ export function FiscalMonthlyStackedChart({ expenses, categories }) {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (ctx) => `${ctx.dataset.label}: $${Number(ctx.raw || 0).toFixed(2)}`,
+          label: (ctx) => `${ctx.dataset.label}: Rs. ${Number(ctx.raw || 0).toFixed(2)}`,
         },
       },
     },
@@ -101,7 +101,7 @@ export function FiscalMonthlyStackedChart({ expenses, categories }) {
         grid: { color: "rgba(148, 163, 184, 0.2)" },
         ticks: {
           color: "#64748b",
-          callback: (v) => `$${v}`,
+          callback: (v) => `Rs. ${v}`,
         },
       },
     },
@@ -156,8 +156,8 @@ export function FiscalCategoryDonut({ expenses, categories }) {
 
   const centerLabel =
     total > 0
-      ? `$${(total / 1000).toFixed(1)}k`
-      : "$0";
+      ? `Rs. ${total.toLocaleString()}`
+      : "Rs. 0";
 
   return (
     <article className="relative flex min-h-[492px] flex-col rounded-xl bg-white p-8 shadow-[0px_12px_32px_0px_rgba(6,78,59,0.04)]">
@@ -179,7 +179,7 @@ export function FiscalCategoryDonut({ expenses, categories }) {
                 callbacks: {
                   label: (ctx) => {
                     const v = ctx.raw || 0;
-                    return `${ctx.label}: $${Number(v).toFixed(2)}`;
+                    return `${ctx.label}: Rs. ${Number(v).toFixed(2)}`;
                   },
                 },
               },
@@ -206,7 +206,7 @@ export function FiscalCategoryDonut({ expenses, categories }) {
                 />
                 {name}
               </span>
-              <span className="font-semibold text-[#191c1e]">${Number(v).toFixed(0)}</span>
+              <span className="font-semibold text-[#191c1e]">Rs. {Number(v).toFixed(0)}</span>
             </li>
           ))
         )}
@@ -243,7 +243,7 @@ export function FiscalDailyTrendLine({ expenses }) {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (ctx) => `$${Number(ctx.raw || 0).toFixed(2)}`,
+          label: (ctx) => `Rs. ${Number(ctx.raw || 0).toFixed(2)}`,
         },
       },
     },
@@ -257,7 +257,7 @@ export function FiscalDailyTrendLine({ expenses }) {
         grid: { color: "rgba(148, 163, 184, 0.2)" },
         ticks: {
           color: "#64748b",
-          callback: (v) => `$${v}`,
+          callback: (v) => `Rs. ${v}`,
         },
       },
     },
@@ -275,7 +275,7 @@ export function FiscalDailyTrendLine({ expenses }) {
         <Line data={data} options={options} />
         {max > 0 && (
           <p className="mt-2 text-center text-xs font-semibold text-[#003526]">
-            Peak (Week {peakIdx}): ${max.toFixed(0)}
+            Peak (Week {peakIdx}): Rs. {max.toFixed(0)}
           </p>
         )}
       </div>
